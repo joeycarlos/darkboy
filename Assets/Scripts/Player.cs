@@ -24,7 +24,13 @@ public class Player : MonoBehaviour
     public float damage = 3.0f;
     public float knockbackPower = 5.0f;
 
-    public bool isFacingRight;
+    public float selfKnockbackPower = 3.0f;
+    public int maxHealth = 5;
+    private int currentHealth;
+
+    private bool isFacingRight;
+
+    private bool isControllable;
 
     // Start is called before the first frame update
     void Start()
@@ -35,6 +41,8 @@ public class Player : MonoBehaviour
         isJumping = false;
         isGroundedRemember = 0;
         isFacingRight = true;
+        currentHealth = maxHealth;
+        isControllable = true;
     }
 
     // Update is called once per frame
@@ -78,7 +86,10 @@ public class Player : MonoBehaviour
         if (horizontalInput != 0) {
             RaycastHit2D hit = Physics2D.Raycast(transform.position, Mathf.Sign(horizontalInput) * Vector2.right, (bc.bounds.size.x / 2.0f + 0.5f), LayerMask.GetMask("Wall"));
             if (hit.collider == null) {
-                Move(horizontalInput, moveSpeed);
+                if (isControllable == true) {
+                    Move(horizontalInput, moveSpeed);
+                }
+
             }
         }
 
@@ -124,9 +135,43 @@ public class Player : MonoBehaviour
             return false;
     }
 
+    public void TakeDamage(int damage) {
+        currentHealth = currentHealth - damage;
+        if (currentHealth <= 0) {
+            Death();
+        }
+        // update health in UI
+    }
+
+    public void Knockback(bool isRightDirection) {
+        rb.velocity = Vector2.zero;
+
+        Vector2 knockbackVector;
+        if (isRightDirection) {
+            knockbackVector = new Vector2(knockbackPower, knockbackPower + 2.0f);
+            Debug.Log(knockbackVector);
+        }
+        else {
+            knockbackVector = new Vector2(-knockbackPower, knockbackPower + 2.0f);
+        }
+        rb.AddForce(knockbackVector, ForceMode2D.Impulse);
+        StartCoroutine(KnockbackState(0.3f));
+    }
+
+    void Death() {
+
+    }
+
     private void OnDrawGizmosSelected() {
         Gizmos.color = Color.red;
         Gizmos.DrawWireSphere(attackPos.position, attackRange);
+    }
+
+    IEnumerator KnockbackState(float time) {
+        isControllable = false;
+        yield return new WaitForSeconds(time);
+
+        isControllable = true;
     }
 
 }

@@ -6,6 +6,7 @@ public class Enemy : MonoBehaviour
 {
     public float maxHealth = 10.0f;
     public float knockbackResistance = 0.0f;
+    public int damage = 1;
 
     public HealthBar healthBar;
 
@@ -30,7 +31,6 @@ public class Enemy : MonoBehaviour
         Vector2 knockbackVector;
         if (isRightDirection) {
             knockbackVector = new Vector2((knockbackPower - knockbackResistance)/2.0f, knockbackPower - knockbackResistance);
-            Debug.Log(knockbackVector);
         } else {
             knockbackVector = new Vector2(-(knockbackPower - knockbackResistance)/2.0f, knockbackPower - knockbackResistance);
         }
@@ -40,5 +40,17 @@ public class Enemy : MonoBehaviour
     void Death() {
         Destroy(gameObject);
         Debug.Log("Enemy has died");
+    }
+
+    private void OnCollisionEnter2D(Collision2D col) {
+        if (col.gameObject.layer == LayerMask.NameToLayer("Player")) {
+            Player p = col.gameObject.GetComponent<Player>();
+            p.TakeDamage(damage);
+            if (col.GetContact(0).normal.x == -1.0f || (transform.position.x < p.transform.position.x))
+                p.Knockback(true);
+            else if (col.GetContact(0).normal.x == 1.0f || (transform.position.x > p.transform.position.x)) {
+                p.Knockback(false);
+            }
+        }
     }
 }

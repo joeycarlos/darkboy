@@ -32,11 +32,15 @@ public class Player : MonoBehaviour
 
     private bool isControllable;
 
+    private SpriteRenderer sr;
+
     // Start is called before the first frame update
     void Start()
     {
         bc = GetComponent<BoxCollider2D>();
         rb = GetComponent<Rigidbody2D>();
+        sr = GetComponent<SpriteRenderer>();
+        
         platformLayer = LayerMask.GetMask("Platform");
         isJumping = false;
         isGroundedRemember = 0;
@@ -182,9 +186,11 @@ public class Player : MonoBehaviour
 
     IEnumerator KnockbackState(float time) {
         isControllable = false;
+        sr.color = Color.red;
         yield return new WaitForSeconds(time);
 
         isControllable = true;
+        sr.color = Color.white;
     }
 
 }

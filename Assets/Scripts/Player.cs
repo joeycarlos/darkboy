@@ -24,6 +24,8 @@ public class Player : MonoBehaviour
     public float damage = 3.0f;
     public float knockbackPower = 5.0f;
 
+    public bool isFacingRight;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -32,6 +34,7 @@ public class Player : MonoBehaviour
         platformLayer = LayerMask.GetMask("Platform");
         isJumping = false;
         isGroundedRemember = 0;
+        isFacingRight = true;
     }
 
     // Update is called once per frame
@@ -64,7 +67,7 @@ public class Player : MonoBehaviour
             Collider2D[] enemiesToDamage = Physics2D.OverlapCircleAll(attackPos.position, attackRange, LayerMask.GetMask("Enemy"));
             for (int i = 0; i < enemiesToDamage.Length; i++) {
                 enemiesToDamage[i].GetComponent<Enemy>().TakeDamage(damage);
-                enemiesToDamage[i].GetComponent<Enemy>().Knockback(knockbackPower, true);
+                enemiesToDamage[i].GetComponent<Enemy>().Knockback(knockbackPower, isFacingRight);
             }
         }
 
@@ -77,6 +80,11 @@ public class Player : MonoBehaviour
             if (hit.collider == null) {
                 Move(horizontalInput, moveSpeed);
             }
+        }
+
+        if ((isFacingRight == true && horizontalInput < 0) || (isFacingRight == false && horizontalInput > 0)) {
+            attackPos.localPosition = new Vector3(-attackPos.localPosition.x, attackPos.localPosition.y, attackPos.localPosition.z);
+            isFacingRight = !isFacingRight;
         }
     }
 

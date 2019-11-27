@@ -30,7 +30,7 @@ public class Player : MonoBehaviour
 
     private bool isFacingRight;
 
-    private bool isControllable;
+    private bool knockbackState;
     public float knockbackTime = 0.3f;
 
     private SpriteRenderer sr;
@@ -47,7 +47,7 @@ public class Player : MonoBehaviour
         isGroundedRemember = 0;
         isFacingRight = true;
         currentHealth = maxHealth;
-        isControllable = true;
+        knockbackState = false;
         GameplayUI.Instance.GenerateHealthUI(maxHealth);
     }
 
@@ -92,7 +92,7 @@ public class Player : MonoBehaviour
         if (horizontalInput != 0) {
             RaycastHit2D hit = Physics2D.Raycast(transform.position, Mathf.Sign(horizontalInput) * Vector2.right, (bc.bounds.size.x / 2.0f + 0.5f), LayerMask.GetMask("Wall"));
             if (hit.collider == null) {
-                if (isControllable == true) {
+                if (knockbackState == false) {
                     Move(horizontalInput, moveSpeed);
                 }
 
@@ -186,11 +186,11 @@ public class Player : MonoBehaviour
     }
 
     IEnumerator KnockbackState(float time) {
-        isControllable = false;
+        knockbackState = true;
         sr.color = Color.red;
         yield return new WaitForSeconds(time);
 
-        isControllable = true;
+        knockbackState = false;
         sr.color = Color.white;
     }
 

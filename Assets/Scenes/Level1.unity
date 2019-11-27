@@ -852,6 +852,27 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c0ba58bc54b53354a94c4744859149dc, type: 3}
+--- !u!1 &5973402176374904365 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5973402178238820153, guid: c0ba58bc54b53354a94c4744859149dc,
+    type: 3}
+  m_PrefabInstance: {fileID: 5973402176374904364}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &5973402176374904366
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5973402176374904365}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e4e256ed5b44bb64eba7fc4d2018297b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  player: {fileID: 9163946664115101514}
+  horizontalOffset: 0
+  verticalOffset: 0
 --- !u!1001 &9163946664115101513
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -919,5 +940,29 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 9163946663227020324, guid: 5c95161e68211bc498128cfeca229443,
+        type: 3}
+      propertyPath: m_Constraints
+      value: 4
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 5c95161e68211bc498128cfeca229443, type: 3}
+--- !u!1 &9163946664115101514 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 9163946663227020325, guid: 5c95161e68211bc498128cfeca229443,
+    type: 3}
+  m_PrefabInstance: {fileID: 9163946664115101513}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &9163946664115101515
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9163946664115101514}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 965598aebadc29a428f2411da0d57b47, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  moveSpeed: 5

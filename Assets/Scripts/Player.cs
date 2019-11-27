@@ -31,6 +31,7 @@ public class Player : MonoBehaviour
     private bool isFacingRight;
 
     private bool isControllable;
+    public float knockbackTime = 0.3f;
 
     private SpriteRenderer sr;
 
@@ -165,7 +166,7 @@ public class Player : MonoBehaviour
             knockbackVector = new Vector2(-knockbackPower, knockbackPower + 2.0f);
         }
         rb.AddForce(knockbackVector, ForceMode2D.Impulse);
-        StartCoroutine(KnockbackState(0.3f));
+        StartCoroutine(KnockbackState(knockbackTime));
     }
 
     public void AddHealth(int value) {

@@ -13,9 +13,16 @@ public class Enemy : MonoBehaviour
     private float currentHealth;
     private Rigidbody2D rb;
 
+    private SpriteRenderer sr;
+
+    private bool knockbackState;
+    public float knockbackTime = 0.3f;
+
     void Start() {
         rb = GetComponent<Rigidbody2D>();
+        sr = GetComponent<SpriteRenderer>();
         currentHealth = maxHealth;
+        knockbackState = false;
     }
 
     public void TakeDamage(float damage) {
@@ -24,6 +31,7 @@ public class Enemy : MonoBehaviour
             Death();
         }
         healthBar.SetSize(currentHealth / maxHealth);
+        StartCoroutine(KnockbackState(knockbackTime));
     }
 
     public void Knockback(float knockbackPower, bool isRightDirection) {
@@ -50,5 +58,14 @@ public class Enemy : MonoBehaviour
                 p.Knockback(false);
             }
         }
+    }
+
+    IEnumerator KnockbackState(float time) {
+        knockbackState = true;
+        sr.color = Color.black;
+        yield return new WaitForSeconds(time);
+
+        knockbackState = false;
+        sr.color = Color.red;
     }
 }

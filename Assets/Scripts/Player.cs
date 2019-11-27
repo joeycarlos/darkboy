@@ -19,6 +19,11 @@ public class Player : MonoBehaviour
     public float isGroundedRememberTime = 0.15f;
     private float isGroundedRemember;
 
+    public Transform attackPos;
+    public float attackRange;
+    public float damage = 3.0f;
+    public float knockbackPower = 5.0f;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -35,13 +40,13 @@ public class Player : MonoBehaviour
         ProcessMovementInput();
 
         isGrounded();
-        if (Input.GetKeyDown(KeyCode.Space) && (isGrounded() || isGroundedRemember > 0)) {
+        if (Input.GetKeyDown(KeyCode.UpArrow) && (isGrounded() || isGroundedRemember > 0)) {
             isJumping = true;
             jumpTimeCounter = maxJumpTime;
             rb.velocity = Vector2.up * jumpForce;
         }
 
-        if (Input.GetKey(KeyCode.Space) && isJumping == true) {
+        if (Input.GetKey(KeyCode.UpArrow) && isJumping == true) {
             if (jumpTimeCounter > 0) {
                 rb.velocity = Vector2.up * jumpForce;
                 jumpTimeCounter -= Time.deltaTime;
@@ -51,8 +56,16 @@ public class Player : MonoBehaviour
             }
         }
 
-        if (Input.GetKeyUp(KeyCode.Space)) {
+        if (Input.GetKeyUp(KeyCode.UpArrow)) {
             isJumping = false;
+        }
+
+        if (Input.GetKeyDown(KeyCode.Space)) {
+            Collider2D[] enemiesToDamage = Physics2D.OverlapCircleAll(attackPos.position, attackRange, LayerMask.GetMask("Enemy"));
+            for (int i = 0; i < enemiesToDamage.Length; i++) {
+                enemiesToDamage[i].GetComponent<Enemy>().TakeDamage(damage);
+                enemiesToDamage[i].GetComponent<Enemy>().Knockback(knockbackPower, true);
+            }
         }
 
     }
@@ -102,4 +115,10 @@ public class Player : MonoBehaviour
         else
             return false;
     }
+
+    private void OnDrawGizmosSelected() {
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireSphere(attackPos.position, attackRange);
+    }
+
 }

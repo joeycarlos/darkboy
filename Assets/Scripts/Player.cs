@@ -30,7 +30,7 @@ public class Player : MonoBehaviour
 
     private bool isFacingRight;
 
-    private bool knockbackState;
+    public bool knockbackState;
     public float knockbackTime = 0.3f;
 
     private SpriteRenderer sr;

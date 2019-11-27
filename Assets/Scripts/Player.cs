@@ -137,11 +137,17 @@ public class Player : MonoBehaviour
     }
 
     public void TakeDamage(int damage) {
+        int originalHealth = currentHealth;
+
         currentHealth = currentHealth - damage;
+        currentHealth = Mathf.Clamp(currentHealth, 0, maxHealth);
+
+        Debug.Log("Player health is now " + currentHealth);
+        GameplayUI.Instance.RemoveHealthIcon(-(currentHealth - originalHealth));
+
         if (currentHealth <= 0) {
             Death();
         }
-        // update health in UI
     }
 
     public void Knockback(bool isRightDirection) {
@@ -159,8 +165,15 @@ public class Player : MonoBehaviour
         StartCoroutine(KnockbackState(0.3f));
     }
 
-    void Death() {
+    public void AddHealth(int value) {
+        int originalHealth = currentHealth;
+        currentHealth += value;
+        currentHealth = Mathf.Clamp(currentHealth, 0, maxHealth);
+        GameplayUI.Instance.AddHealthIcon(currentHealth - originalHealth);
+    }
 
+    void Death() {
+        Destroy(gameObject);
     }
 
     private void OnDrawGizmosSelected() {

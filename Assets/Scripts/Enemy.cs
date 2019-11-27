@@ -7,6 +7,8 @@ public class Enemy : MonoBehaviour
     public float maxHealth = 10.0f;
     public float knockbackResistance = 0.0f;
 
+    public HealthBar healthBar;
+
     private float currentHealth;
     private Rigidbody2D rb;
 
@@ -15,15 +17,12 @@ public class Enemy : MonoBehaviour
         currentHealth = maxHealth;
     }
 
-    void Update() {
-        
-    }
-
     public void TakeDamage(float damage) {
         currentHealth = currentHealth - damage;
         if (currentHealth <= 0) {
             Death();
         }
+        healthBar.SetSize(currentHealth / maxHealth);
         Debug.Log("Taking damage");
     }
 

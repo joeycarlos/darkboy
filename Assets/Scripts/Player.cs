@@ -35,6 +35,8 @@ public class Player : MonoBehaviour
 
     private SpriteRenderer sr;
 
+    private float currentSpirit;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -49,6 +51,7 @@ public class Player : MonoBehaviour
         currentHealth = maxHealth;
         knockbackState = false;
         GameplayUI.Instance.GenerateHealthUI(maxHealth);
+        currentSpirit = 0;
     }
 
     // Update is called once per frame
@@ -194,4 +197,16 @@ public class Player : MonoBehaviour
         sr.color = Color.white;
     }
 
+    void AddSpirit(float value) {
+        currentSpirit += value;
+        Debug.Log("Spirit: " + currentSpirit);
+    }
+
+    private void OnTriggerEnter2D(Collider2D col) {
+        if (col.gameObject.layer == LayerMask.NameToLayer("Pickup")) {
+            Pickup p = col.gameObject.GetComponent<Pickup>();
+            AddSpirit(p.spiritValue);
+            Destroy(p.gameObject);
+        }
+    }
 }

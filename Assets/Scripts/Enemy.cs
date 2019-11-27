@@ -47,19 +47,6 @@ public class Enemy : MonoBehaviour
     void Death() {
         Destroy(gameObject);
     }
-    /*
-    private void OnCollisionEnter2D(Collision2D col) {
-        if (col.gameObject.layer == LayerMask.NameToLayer("Player")) {
-            Player p = col.gameObject.GetComponent<Player>();
-            p.TakeDamage(damage);
-            if (col.GetContact(0).normal.x == -1.0f || (transform.position.x < p.transform.position.x))
-                p.Knockback(true);
-            else if (col.GetContact(0).normal.x == 1.0f || (transform.position.x > p.transform.position.x)) {
-                p.Knockback(false);
-            }
-        }
-    }
-    */
 
     IEnumerator KnockbackState(float time) {
         knockbackState = true;

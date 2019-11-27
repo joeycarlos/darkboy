@@ -28,11 +28,7 @@ public class GameplayUI : MonoBehaviour
         healthIcons = new List<Image>();
     }
 
-    void Start(){
-        GenerateHealthUI(5);
-    }
-
-    void GenerateHealthUI(int health) {
+    public void GenerateHealthUI(int health) {
         for (int i = 0; i < health; i++) {
             Image iHealthIcon = Instantiate(healthIcon, transform);
             iHealthIcon.rectTransform.anchoredPosition = new Vector2(healthLabel.rectTransform.anchoredPosition.x + 20.0f + (i * 30.0f), healthLabel.rectTransform.anchoredPosition.y + 5.0f);

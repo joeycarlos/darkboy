@@ -24,7 +24,6 @@ public class Enemy : MonoBehaviour
             Death();
         }
         healthBar.SetSize(currentHealth / maxHealth);
-        Debug.Log("Taking damage");
     }
 
     public void Knockback(float knockbackPower, bool isRightDirection) {
@@ -39,7 +38,6 @@ public class Enemy : MonoBehaviour
 
     void Death() {
         Destroy(gameObject);
-        Debug.Log("Enemy has died");
     }
 
     private void OnCollisionEnter2D(Collision2D col) {

@@ -43,6 +43,7 @@ public class Player : MonoBehaviour
         isFacingRight = true;
         currentHealth = maxHealth;
         isControllable = true;
+        GameplayUI.Instance.GenerateHealthUI(maxHealth);
     }
 
     // Update is called once per frame
@@ -129,7 +130,6 @@ public class Player : MonoBehaviour
 
         if (result1 == true || result2 == true || result3 == true) {
             isGroundedRemember = isGroundedRememberTime;
-            Debug.Log("isGrounded is true");
             return true;
         }
         else
@@ -142,7 +142,6 @@ public class Player : MonoBehaviour
         currentHealth = currentHealth - damage;
         currentHealth = Mathf.Clamp(currentHealth, 0, maxHealth);
 
-        Debug.Log("Player health is now " + currentHealth);
         GameplayUI.Instance.RemoveHealthIcon(-(currentHealth - originalHealth));
 
         if (currentHealth <= 0) {

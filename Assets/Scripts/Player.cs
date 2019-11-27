@@ -112,23 +112,24 @@ public class Player : MonoBehaviour
         bool result2;
         bool result3;
 
-        Vector3 raycastOriginOffset = new Vector3(-(bc.size.x), -bc.size.y + 0.05f, 0);
+        Vector3 raycastOriginOffset = new Vector3(-(bc.size.x), -bc.size.y/2.0f + 0.05f, 0);
         RaycastHit2D hit = Physics2D.Raycast(transform.position + raycastOriginOffset, -Vector2.up, 1.0f, platformLayer);
         if (hit.collider == null) result1 = false;
         else result1 = true;
 
-        raycastOriginOffset = new Vector3(bc.size.x, -bc.size.y + 0.05f, 0);
+        raycastOriginOffset = new Vector3(bc.size.x, -bc.size.y / 2.0f + 0.05f, 0);
         hit = Physics2D.Raycast(transform.position + raycastOriginOffset, -Vector2.up, 1.0f, platformLayer);
         if (hit.collider == null) result2 = false;
         else result2 = true;
 
-        raycastOriginOffset = new Vector3(0, -bc.size.y, 0);
+        raycastOriginOffset = new Vector3(0, -bc.size.y / 2.0f, 0);
         hit = Physics2D.Raycast(transform.position + raycastOriginOffset, -Vector2.up, 1.0f, platformLayer);
         if (hit.collider == null) result3 = false;
         else result3 = true;
 
         if (result1 == true || result2 == true || result3 == true) {
             isGroundedRemember = isGroundedRememberTime;
+            Debug.Log("isGrounded is true");
             return true;
         }
         else

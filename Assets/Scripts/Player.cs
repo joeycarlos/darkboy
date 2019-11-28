@@ -54,9 +54,13 @@ public class Player : MonoBehaviour
         isFacingRight = true;
         currentHealth = maxHealth;
         knockbackState = false;
-        GameplayUI.Instance.GenerateHealthUI(maxHealth);
+        
         currentSpirit = 0;
         spiritLevel = 1;
+
+        // Initial UI updates
+        GameplayUI.Instance.GenerateHealthUI(maxHealth);
+        GameplayUI.Instance.UpdateSpiritLevelValue(spiritLevel);
     }
 
     // Update is called once per frame
@@ -215,6 +219,7 @@ public class Player : MonoBehaviour
 
     void LevelUp() {
         spiritLevel++;
+        GameplayUI.Instance.UpdateSpiritLevelValue(spiritLevel);
     }
 
     private void OnTriggerEnter2D(Collider2D col) {

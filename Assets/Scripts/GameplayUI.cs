@@ -20,6 +20,7 @@ public class GameplayUI : MonoBehaviour
 
     public Text healthLabel;
     public Image healthIcon;
+    public Text spiritLevelValue;
 
     private List<Image> healthIcons;
 
@@ -53,5 +54,9 @@ public class GameplayUI : MonoBehaviour
             iHealthIcon.rectTransform.anchoredPosition = new Vector2(healthLabel.rectTransform.anchoredPosition.x + 20.0f + ((originalHealth + i) * 30.0f), healthLabel.rectTransform.anchoredPosition.y + 5.0f);
             healthIcons.Add(iHealthIcon);
         }
+    }
+
+    public void UpdateSpiritLevelValue(int newLevel) {
+        spiritLevelValue.text = newLevel.ToString();
     }
 }

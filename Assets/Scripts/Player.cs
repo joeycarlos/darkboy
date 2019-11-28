@@ -36,6 +36,10 @@ public class Player : MonoBehaviour
     private SpriteRenderer sr;
 
     private float currentSpirit;
+    private int spiritLevel;
+
+    public float[] spiritLevelReqs = new float[4];
+
 
     // Start is called before the first frame update
     void Start()
@@ -52,6 +56,7 @@ public class Player : MonoBehaviour
         knockbackState = false;
         GameplayUI.Instance.GenerateHealthUI(maxHealth);
         currentSpirit = 0;
+        spiritLevel = 1;
     }
 
     // Update is called once per frame
@@ -198,8 +203,18 @@ public class Player : MonoBehaviour
     }
 
     void AddSpirit(float value) {
-        currentSpirit += value;
+        if (currentSpirit + value >= spiritLevelReqs[spiritLevel - 1]) {
+            currentSpirit = currentSpirit + value - spiritLevelReqs[spiritLevel - 1];
+            LevelUp();
+        } else {
+            currentSpirit += value;
+        }
+
         Debug.Log("Spirit: " + currentSpirit);
+    }
+
+    void LevelUp() {
+        spiritLevel++;
     }
 
     private void OnTriggerEnter2D(Collider2D col) {

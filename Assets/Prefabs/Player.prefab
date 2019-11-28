@@ -262,4 +262,12 @@ MonoBehaviour:
   attackRange: 0.5
   damage: 3
   knockbackPower: 5
-  isFacingRight: 0
+  selfKnockbackPower: 3
+  maxHealth: 5
+  knockbackState: 0
+  knockbackTime: 0.3
+  spiritLevelReqs:
+  - 45
+  - 75
+  - 100
+  - 125

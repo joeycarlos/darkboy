@@ -4,5 +4,5 @@ using UnityEngine;
 
 public class Pickup : MonoBehaviour
 {
-    public float spiritValue = 10.0f;
+    public int spiritValue = 10;
 }

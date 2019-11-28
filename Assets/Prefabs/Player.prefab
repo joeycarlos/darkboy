@@ -266,8 +266,4 @@ MonoBehaviour:
   maxHealth: 5
   knockbackState: 0
   knockbackTime: 0.3
-  spiritLevelReqs:
-  - 45
-  - 75
-  - 100
-  - 125
+  spiritLevelReqs: 2d00000064000000aa000000fa000000

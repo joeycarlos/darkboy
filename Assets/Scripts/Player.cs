@@ -35,10 +35,10 @@ public class Player : MonoBehaviour
 
     private SpriteRenderer sr;
 
-    private float currentSpirit;
+    private int currentSpirit;
     private int spiritLevel;
 
-    public float[] spiritLevelReqs = new float[4];
+    public int[] spiritLevelReqs = new int[4];
 
 
     // Start is called before the first frame update
@@ -61,6 +61,11 @@ public class Player : MonoBehaviour
         // Initial UI updates
         GameplayUI.Instance.GenerateHealthUI(maxHealth);
         GameplayUI.Instance.UpdateSpiritLevelValue(spiritLevel);
+        
+        GameplayUI.Instance.GetComponentInChildren<SpiritBar>().min = 0;
+        GameplayUI.Instance.GetComponentInChildren<SpiritBar>().max = spiritLevelReqs[spiritLevel - 1];
+        GameplayUI.Instance.GetComponentInChildren<SpiritBar>().SetSpirit(currentSpirit);
+        
     }
 
     // Update is called once per frame
@@ -96,7 +101,6 @@ public class Player : MonoBehaviour
                 enemiesToDamage[i].GetComponent<Enemy>().Knockback(knockbackPower, isFacingRight);
             }
         }
-
     }
 
     void ProcessMovementInput() {
@@ -206,15 +210,14 @@ public class Player : MonoBehaviour
         sr.color = Color.white;
     }
 
-    void AddSpirit(float value) {
+    void AddSpirit(int value) {
         if (currentSpirit + value >= spiritLevelReqs[spiritLevel - 1]) {
             currentSpirit = currentSpirit + value - spiritLevelReqs[spiritLevel - 1];
             LevelUp();
         } else {
             currentSpirit += value;
         }
-
-        Debug.Log("Spirit: " + currentSpirit);
+        GameplayUI.Instance.GetComponentInChildren<SpiritBar>().SetSpirit(currentSpirit);
     }
 
     void LevelUp() {

@@ -15,7 +15,7 @@ public class Enemy : MonoBehaviour
 
     private SpriteRenderer sr;
 
-    private bool knockbackState;
+    public bool knockbackState;
     public float knockbackTime = 0.3f;
 
     void Start() {

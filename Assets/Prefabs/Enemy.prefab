@@ -218,7 +218,8 @@ MonoBehaviour:
   maxHealth: 10
   knockbackResistance: 0
   healthBar: {fileID: 5323186287568414875}
-  knockbackTime: 0.3
+  knockbackState: 0
+  knockbackTime: 0.5
 --- !u!1001 &7166473517379946261
 PrefabInstance:
   m_ObjectHideFlags: 0

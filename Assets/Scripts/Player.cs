@@ -97,8 +97,10 @@ public class Player : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Space)) {
             Collider2D[] enemiesToDamage = Physics2D.OverlapCircleAll(attackPos.position, attackRange, LayerMask.GetMask("Enemy"));
             for (int i = 0; i < enemiesToDamage.Length; i++) {
-                enemiesToDamage[i].GetComponent<Enemy>().TakeDamage(damage);
-                enemiesToDamage[i].GetComponent<Enemy>().Knockback(knockbackPower, isFacingRight);
+                if (enemiesToDamage[i].GetComponent<Enemy>().knockbackState == false) {
+                    enemiesToDamage[i].GetComponent<Enemy>().TakeDamage(damage);
+                    enemiesToDamage[i].GetComponent<Enemy>().Knockback(knockbackPower, isFacingRight);
+                }
             }
         }
     }

@@ -70,10 +70,9 @@ public class Player : MonoBehaviour
         InitPlayerUI();
     }
 
-    // Update is called once per frame
-    void Update()
-    {
+    void Update() {
         ProcessMovementInput();
+        GroundedCheck();
         ProcessJumpInput();
         ProcessAttackInput();
     }
@@ -97,7 +96,7 @@ public class Player : MonoBehaviour
         }
     }
 
-    bool isGrounded() {
+    void GroundedCheck() {
         if (isGroundedRemember > 0)
             isGroundedRemember -= Time.deltaTime;
 
@@ -120,14 +119,11 @@ public class Player : MonoBehaviour
 
         if (result1 == true || result2 == true || result3 == true) {
             isGroundedRemember = isGroundedRememberTime;
-            return true;
         }
-        else
-            return false;
     }
 
     void ProcessJumpInput() {
-        if (isGrounded() || isGroundedRemember > 0) {
+        if (isGroundedRemember > 0) {
             if (Input.GetKeyDown(KeyCode.UpArrow)) {
                 isJumping = true;
                 jumpTimeCounter = maxJumpTime;

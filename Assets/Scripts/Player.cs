@@ -4,42 +4,45 @@ using UnityEngine;
 
 public class Player : MonoBehaviour
 {
-    public float moveSpeed = 5.0f;
-    public float jumpForce = 5.0f;
+    // MOVEMENT
+    [SerializeField] private float moveSpeed = 5.0f;
+    private bool isFacingRight;
 
-    private BoxCollider2D bc;
-    private Rigidbody2D rb;
-
-    private int platformLayer;
-
-    public float maxJumpTime = 0.7f;
+    // JUMPING
+    [SerializeField] private float jumpForce = 5.0f;
+    [SerializeField] private float maxJumpTime = 0.7f;
     private float jumpTimeCounter;
     private bool isJumping;
 
-    public float isGroundedRememberTime = 0.15f;
+    // GROUND CHECK
+    [SerializeField] private float isGroundedRememberTime = 0.15f;
     private float isGroundedRemember;
+    private int platformLayer;
 
-    public Transform attackPos;
-    public float attackRange;
-    public float damage = 3.0f;
-    public float knockbackPower = 5.0f;
+    // ATTACKING
+    [SerializeField] private Transform attackPos;
+    [SerializeField] private float attackRange = 0.5f;
+    [SerializeField] private float damage = 3.0f;
+    [SerializeField] private float knockbackPower = 5.0f;
 
-    public float selfKnockbackPower = 3.0f;
+    // HEALTH
     public int maxHealth = 5;
     private int currentHealth;
 
-    private bool isFacingRight;
-
+    // SELF KNOCKBACK
+    [SerializeField] private float knockbackTime = 0.3f;
+    [SerializeField] private float selfKnockbackPower = 3.0f;
     public bool knockbackState;
-    public float knockbackTime = 0.3f;
 
-    private SpriteRenderer sr;
-
+    // SPIRIT
+    [SerializeField] private int[] spiritLevelReqs = new int[4];
     private int currentSpirit;
     private int spiritLevel;
 
-    public int[] spiritLevelReqs = new int[4];
-
+    // COMPONENTS
+    private BoxCollider2D bc;
+    private Rigidbody2D rb;
+    private SpriteRenderer sr;
 
     // Start is called before the first frame update
     void Start()
@@ -103,6 +106,8 @@ public class Player : MonoBehaviour
                 }
             }
         }
+
+        // on Space key down, go into charge state
     }
 
     void ProcessMovementInput() {

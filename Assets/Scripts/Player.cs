@@ -5,36 +5,43 @@ using UnityEngine;
 public class Player : MonoBehaviour
 {
     // MOVEMENT
+    [Header("Moving")]
     [SerializeField] private float moveSpeed = 5.0f;
     private bool isFacingRight;
 
     // JUMPING
+    [Header("Jumping")]
     [SerializeField] private float jumpForce = 5.0f;
     [SerializeField] private float maxJumpTime = 0.7f;
     private float jumpTimeCounter;
     private bool isJumping;
 
     // GROUND CHECK
+    [Header("Ground Check")]
     [SerializeField] private float isGroundedRememberTime = 0.15f;
     private float isGroundedRemember;
     private int platformLayer;
 
     // ATTACKING
+    [Header("Attacking")]
     [SerializeField] private Transform attackPos;
     [SerializeField] private float attackRange = 0.5f;
     [SerializeField] private float damage = 3.0f;
     [SerializeField] private float knockbackPower = 5.0f;
 
     // HEALTH
+    [Header("Health")]
     public int maxHealth = 5;
     private int currentHealth;
 
     // SELF KNOCKBACK
+    [Header("Self Knockback")]
     [SerializeField] private float knockbackTime = 0.3f;
     [SerializeField] private float selfKnockbackPower = 3.0f;
     public bool knockbackState;
 
     // SPIRIT
+    [Header("Spirit")]
     [SerializeField] private int[] spiritLevelReqs = new int[4];
     private int currentSpirit;
     private int spiritLevel;

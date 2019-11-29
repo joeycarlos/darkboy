@@ -123,12 +123,11 @@ public class Player : MonoBehaviour
     }
 
     void ProcessJumpInput() {
-        if (isGroundedRemember > 0) {
-            if (Input.GetKeyDown(KeyCode.UpArrow)) {
-                isJumping = true;
-                jumpTimeCounter = maxJumpTime;
-                rb.velocity = Vector2.up * jumpForce;
-            }
+
+        if (Input.GetKeyDown(KeyCode.UpArrow) && isGroundedRemember > 0) {
+            isJumping = true;
+            jumpTimeCounter = maxJumpTime;
+            rb.velocity = Vector2.up * jumpForce;
         }
 
         if (Input.GetKey(KeyCode.UpArrow) && isJumping == true) {

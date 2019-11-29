@@ -51,6 +51,7 @@ public class Player : MonoBehaviour
     private Rigidbody2D rb;
     private SpriteRenderer sr;
 
+    /*
     // Start is called before the first frame update
     void Start()
     {
@@ -239,5 +240,17 @@ public class Player : MonoBehaviour
             AddSpirit(p.spiritValue);
             Destroy(p.gameObject);
         }
+    }
+    */
+
+    enum State { sIdle, sRunning, sJumping };
+
+
+    public void TakeDamage(float damage) {
+
+    }
+
+    public void Knockback(bool isRightDirection) {
+
     }
 }

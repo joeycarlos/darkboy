@@ -80,34 +80,28 @@ public class Player : MonoBehaviour
 
     void ProcessMovementInput() {
         float horizontalInput = Input.GetAxis("Horizontal");
-        if (horizontalInput != 0) {
-            RaycastHit2D hit = Physics2D.Raycast(transform.position, Mathf.Sign(horizontalInput) * Vector2.right, (bc.bounds.size.x / 2.0f + 0.5f), LayerMask.GetMask("Wall"));
-            if (hit.collider == null) {
-                if (knockbackState == false) {
-                    Move(horizontalInput, moveSpeed);
-                }
 
-            }
-        }
-
+        // Face the correct direction
         if ((isFacingRight == true && horizontalInput < 0) || (isFacingRight == false && horizontalInput > 0)) {
             attackPos.localPosition = new Vector3(-attackPos.localPosition.x, attackPos.localPosition.y, attackPos.localPosition.z);
             isFacingRight = !isFacingRight;
         }
-    }
 
-    void Move(float horizontalInput, float moveSpeed) {
-        Vector3 moveVector = new Vector3(horizontalInput * moveSpeed * Time.deltaTime, 0, 0);
-        transform.Translate(moveVector);
+        // Move if no wall and and not in knockback state
+        if (horizontalInput != 0 && knockbackState == false) {
+
+            RaycastHit2D hit = Physics2D.Raycast(transform.position, Mathf.Sign(horizontalInput) * Vector2.right, (bc.bounds.size.x / 2.0f + 0.5f), LayerMask.GetMask("Wall"));
+
+            if (hit.collider == null)
+                transform.Translate(new Vector3(horizontalInput * moveSpeed * Time.deltaTime, 0, 0));
+        }
     }
 
     bool isGrounded() {
         if (isGroundedRemember > 0)
             isGroundedRemember -= Time.deltaTime;
 
-        bool result1;
-        bool result2;
-        bool result3;
+        bool result1, result2, result3;
 
         Vector3 raycastOriginOffset = new Vector3(-(bc.size.x), -bc.size.y/2.0f + 0.05f, 0);
         RaycastHit2D hit = Physics2D.Raycast(transform.position + raycastOriginOffset, -Vector2.up, 1.0f, platformLayer);

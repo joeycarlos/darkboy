@@ -51,6 +51,190 @@ public class Player : MonoBehaviour
     private Rigidbody2D rb;
     private SpriteRenderer sr;
 
+    // STATE
+    private State state;
+
+    // INPUTS
+    float horizontalInput;
+    bool isGrounded;
+    bool hurtStatePending;
+    bool hurtTimeFinished;
+    bool attackFinished;
+
+    // -----
+
+    enum State { Idle, Running, Jumping, Falling, Charging, Attacking, Hurt, Death, Pause };
+
+    void Start() {
+        bc = GetComponent<BoxCollider2D>();
+        rb = GetComponent<Rigidbody2D>();
+        sr = GetComponent<SpriteRenderer>();
+
+        state = State.Idle;
+        isFacingRight = true;
+        jumpTimeCounter = 0;
+    }
+
+    void Update() {
+        ReadInputs();
+        isGrounded = CheckGround();
+        Debug.Log(state);
+
+        switch (state) {
+            case State.Idle:
+                if (hurtStatePending)
+                    state = State.Hurt;
+                else if (Input.GetKeyDown(KeyCode.Space) && isGrounded == true)
+                    state = State.Charging;
+                else if (Input.GetKeyDown(KeyCode.UpArrow) && isGrounded == true) {
+                    EnterJumpState();
+                    state = State.Jumping;
+                }
+                else if (horizontalInput != 0)
+                    state = State.Running;
+                break;
+            case State.Running:
+                ProcessMovementInput();
+
+                if (hurtStatePending)
+                    state = State.Hurt;
+                else if (Input.GetKeyDown(KeyCode.Space) && isGrounded == true)
+                    state = State.Charging;
+                else if (Input.GetKeyDown(KeyCode.UpArrow) && isGrounded == true) {
+                    EnterJumpState();
+                    state = State.Jumping;
+                }
+                else if (horizontalInput == 0)
+                    state = State.Idle;
+                break;
+            case State.Jumping:
+                ProcessMovementInput();
+
+                rb.velocity = Vector2.up * jumpForce;
+                jumpTimeCounter -= Time.deltaTime;
+
+                if (hurtStatePending)
+                    state = State.Hurt;
+                else if (Input.GetKeyUp(KeyCode.UpArrow) || jumpTimeCounter <= 0)
+                    state = State.Falling;
+                break;
+            case State.Falling:
+                ProcessMovementInput();
+
+                if (hurtStatePending)
+                    state = State.Hurt;
+                else if (Input.GetKeyDown(KeyCode.UpArrow) && isGrounded == true) {
+                    EnterJumpState();
+                    state = State.Jumping;
+                }
+                else if (horizontalInput != 0 && isGrounded == true)
+                    state = State.Running;
+                else if (horizontalInput == 0 && isGrounded == true)
+                    state = State.Idle;
+                break;
+            case State.Hurt:
+                if (hurtTimeFinished == true) {
+                    if (Input.GetKeyDown(KeyCode.UpArrow) && isGrounded == true )
+                        state = State.Jumping;
+                    else if (horizontalInput != 0 && isGrounded == true)
+                        state = State.Running;
+                    else if (horizontalInput == 0 && isGrounded == true)
+                        state = State.Idle;
+                }
+                break;
+            case State.Charging:
+                if (hurtStatePending)
+                    state = State.Hurt;
+                else if (Input.GetKeyUp(KeyCode.Space))
+                    state = State.Attacking;
+                break;
+            case State.Attacking:
+                if (attackFinished) {
+                    if (horizontalInput == 0)
+                        state = State.Idle;
+                    else if (horizontalInput != 0)
+                        state = State.Running;
+                    else if (Input.GetKeyDown(KeyCode.UpArrow))
+                        state = State.Jumping;
+                    else if (Input.GetKeyDown(KeyCode.Space))
+                        state = State.Charging;
+                    else if (hurtStatePending)
+                        state = State.Hurt;
+                }
+                break;
+            default:
+                break;
+
+           
+        }
+    }
+
+    void ReadInputs() {
+        horizontalInput = Input.GetAxis("Horizontal");
+    }
+
+    void ProcessMovementInput() {
+
+        // Face the correct direction
+        if ((isFacingRight == true && horizontalInput < 0) || (isFacingRight == false && horizontalInput > 0)) {
+            attackPos.localPosition = new Vector3(-attackPos.localPosition.x, attackPos.localPosition.y, attackPos.localPosition.z);
+            isFacingRight = !isFacingRight;
+        }
+
+        // Move if no wall and and not in knockback state
+        if (horizontalInput != 0) {
+
+            RaycastHit2D hit = Physics2D.Raycast(transform.position, Mathf.Sign(horizontalInput) * Vector2.right, (bc.bounds.size.x / 2.0f + 0.5f), LayerMask.GetMask("Wall"));
+
+            if (hit.collider == null)
+                transform.Translate(new Vector3(horizontalInput * moveSpeed * Time.deltaTime, 0, 0));
+        }
+    }
+
+    void EnterJumpState() {
+        jumpTimeCounter = maxJumpTime;
+        rb.velocity = Vector2.up * jumpForce;
+    }
+
+    bool CheckGround() {
+        if (isGroundedRemember > 0)
+            isGroundedRemember -= Time.deltaTime;
+
+        bool result1, result2, result3;
+
+        Vector3 raycastOriginOffset = new Vector3(-bc.bounds.extents.x, -bc.bounds.extents.y + 0.05f, 0);
+        RaycastHit2D hit = Physics2D.Raycast(transform.position + raycastOriginOffset, -Vector2.up, 0.4f, LayerMask.GetMask("Platform"));
+        if (hit.collider == null) result1 = false;
+        else result1 = true;
+
+        raycastOriginOffset = new Vector3(bc.bounds.extents.x, -bc.bounds.extents.y + 0.05f, 0);
+        hit = Physics2D.Raycast(transform.position + raycastOriginOffset, -Vector2.up, 0.4f, LayerMask.GetMask("Platform"));
+        if (hit.collider == null) result2 = false;
+        else result2 = true;
+
+        raycastOriginOffset = new Vector3(0, -bc.bounds.extents.y + 0.05f, 0);
+        hit = Physics2D.Raycast(transform.position + raycastOriginOffset, -Vector2.up, 0.4f, LayerMask.GetMask("Platform"));
+        if (hit.collider == null) result3 = false;
+        else result3 = true;
+
+        if (result1 == true || result2 == true || result3 == true) {
+            isGroundedRemember = isGroundedRememberTime;
+            return true;
+        }
+        else
+            return false;
+        
+    }
+
+    public void TakeDamage(float damage) {
+
+    }
+
+    public void Knockback(bool isRightDirection) {
+
+    }
+
+
     /*
     // Start is called before the first frame update
     void Start()
@@ -243,14 +427,5 @@ public class Player : MonoBehaviour
     }
     */
 
-    enum State { sIdle, sRunning, sJumping };
 
-
-    public void TakeDamage(float damage) {
-
-    }
-
-    public void Knockback(bool isRightDirection) {
-
-    }
 }

@@ -64,57 +64,18 @@ public class Player : MonoBehaviour
         isFacingRight = true;
         currentHealth = maxHealth;
         knockbackState = false;
-        
         currentSpirit = 0;
         spiritLevel = 1;
 
-        // Initial UI updates
-        GameplayUI.Instance.GenerateHealthUI(maxHealth);
-        GameplayUI.Instance.UpdateSpiritLevelValue(spiritLevel);
-        
-        GameplayUI.Instance.GetComponentInChildren<SpiritBar>().min = 0;
-        GameplayUI.Instance.GetComponentInChildren<SpiritBar>().max = spiritLevelReqs[spiritLevel - 1];
-        GameplayUI.Instance.GetComponentInChildren<SpiritBar>().SetSpirit(currentSpirit);
-        
+        InitPlayerUI();
     }
 
     // Update is called once per frame
     void Update()
     {
         ProcessMovementInput();
-
-        isGrounded();
-        if (Input.GetKeyDown(KeyCode.UpArrow) && (isGrounded() || isGroundedRemember > 0)) {
-            isJumping = true;
-            jumpTimeCounter = maxJumpTime;
-            rb.velocity = Vector2.up * jumpForce;
-        }
-
-        if (Input.GetKey(KeyCode.UpArrow) && isJumping == true) {
-            if (jumpTimeCounter > 0) {
-                rb.velocity = Vector2.up * jumpForce;
-                jumpTimeCounter -= Time.deltaTime;
-            }
-            else {
-                isJumping = false;
-            }
-        }
-
-        if (Input.GetKeyUp(KeyCode.UpArrow)) {
-            isJumping = false;
-        }
-
-        if (Input.GetKeyDown(KeyCode.Space)) {
-            Collider2D[] enemiesToDamage = Physics2D.OverlapCircleAll(attackPos.position, attackRange, LayerMask.GetMask("Enemy"));
-            for (int i = 0; i < enemiesToDamage.Length; i++) {
-                if (enemiesToDamage[i].GetComponent<Enemy>().knockbackState == false) {
-                    enemiesToDamage[i].GetComponent<Enemy>().TakeDamage(damage);
-                    enemiesToDamage[i].GetComponent<Enemy>().Knockback(knockbackPower, isFacingRight);
-                }
-            }
-        }
-
-        // on Space key down, go into charge state
+        ProcessJumpInput();
+        ProcessAttackInput();
     }
 
     void ProcessMovementInput() {
@@ -169,6 +130,41 @@ public class Player : MonoBehaviour
         }
         else
             return false;
+    }
+
+    void ProcessJumpInput() {
+        if (isGrounded() || isGroundedRemember > 0) {
+            if (Input.GetKeyDown(KeyCode.UpArrow)) {
+                isJumping = true;
+                jumpTimeCounter = maxJumpTime;
+                rb.velocity = Vector2.up * jumpForce;
+            }
+        }
+
+        if (Input.GetKey(KeyCode.UpArrow) && isJumping == true) {
+            if (jumpTimeCounter > 0) {
+                rb.velocity = Vector2.up * jumpForce;
+                jumpTimeCounter -= Time.deltaTime;
+            }
+            else
+                isJumping = false;
+        }
+
+        if (Input.GetKeyUp(KeyCode.UpArrow)) {
+            isJumping = false;
+        }
+    }
+
+    void ProcessAttackInput() {
+        if (Input.GetKeyDown(KeyCode.Space)) {
+            Collider2D[] enemiesToDamage = Physics2D.OverlapCircleAll(attackPos.position, attackRange, LayerMask.GetMask("Enemy"));
+            for (int i = 0; i < enemiesToDamage.Length; i++) {
+                if (enemiesToDamage[i].GetComponent<Enemy>().knockbackState == false) {
+                    enemiesToDamage[i].GetComponent<Enemy>().TakeDamage(damage);
+                    enemiesToDamage[i].GetComponent<Enemy>().Knockback(knockbackPower, isFacingRight);
+                }
+            }
+        }
     }
 
     public void TakeDamage(int damage) {
@@ -237,6 +233,15 @@ public class Player : MonoBehaviour
     void LevelUp() {
         spiritLevel++;
         GameplayUI.Instance.UpdateSpiritLevelValue(spiritLevel);
+    }
+
+    void InitPlayerUI() {
+        GameplayUI.Instance.GenerateHealthUI(maxHealth);
+        GameplayUI.Instance.UpdateSpiritLevelValue(spiritLevel);
+
+        GameplayUI.Instance.GetComponentInChildren<SpiritBar>().min = 0;
+        GameplayUI.Instance.GetComponentInChildren<SpiritBar>().max = spiritLevelReqs[spiritLevel - 1];
+        GameplayUI.Instance.GetComponentInChildren<SpiritBar>().SetSpirit(currentSpirit);
     }
 
     private void OnTriggerEnter2D(Collider2D col) {

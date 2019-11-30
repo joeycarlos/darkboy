@@ -74,6 +74,8 @@ public class Player : MonoBehaviour
         currentHealth = maxHealth;
         isGroundedRememberCounter = 0;
         hasJumped = false;
+        currentSpirit = 0;
+        spiritLevel = 1;
 
         InitPlayerUI();
     }
@@ -81,7 +83,6 @@ public class Player : MonoBehaviour
     void Update() {
         ReadInputs();
         isGrounded = CheckGround();
-        Debug.Log(hasJumped);
 
         switch (state) {
             case State.Idle:
@@ -269,15 +270,12 @@ public class Player : MonoBehaviour
         Vector2 knockbackVector;
         if (isRightDirection) {
             knockbackVector = new Vector2(knockbackPower, knockbackPower + 2.0f);
-            Debug.Log(knockbackVector);
         }
         else {
             knockbackVector = new Vector2(-knockbackPower, knockbackPower + 2.0f);
         }
         rb.AddForce(knockbackVector, ForceMode2D.Impulse);
     }
-
-
 
     void Death() {
         Destroy(gameObject);
@@ -286,12 +284,35 @@ public class Player : MonoBehaviour
     void InitPlayerUI() {
         GameplayUI.Instance.GenerateHealthUI(maxHealth);
 
-        /*
         GameplayUI.Instance.UpdateSpiritLevelValue(spiritLevel);
         GameplayUI.Instance.GetComponentInChildren<SpiritBar>().min = 0;
         GameplayUI.Instance.GetComponentInChildren<SpiritBar>().max = spiritLevelReqs[spiritLevel - 1];
         GameplayUI.Instance.GetComponentInChildren<SpiritBar>().SetSpirit(currentSpirit);
-        */
+        
+    }
+
+    void AddSpirit(int value) {
+        if (currentSpirit + value >= spiritLevelReqs[spiritLevel - 1]) {
+            currentSpirit = currentSpirit + value - spiritLevelReqs[spiritLevel - 1];
+            LevelUp();
+        }
+        else {
+            currentSpirit += value;
+        }
+        GameplayUI.Instance.GetComponentInChildren<SpiritBar>().SetSpirit(currentSpirit);
+    }
+
+    void LevelUp() {
+        spiritLevel++;
+        GameplayUI.Instance.UpdateSpiritLevelValue(spiritLevel);
+    }
+
+    private void OnTriggerEnter2D(Collider2D col) {
+        if (col.gameObject.layer == LayerMask.NameToLayer("Pickup")) {
+            Pickup p = col.gameObject.GetComponent<Pickup>();
+            AddSpirit(p.spiritValue);
+            Destroy(p.gameObject);
+        }
     }
 
     /*

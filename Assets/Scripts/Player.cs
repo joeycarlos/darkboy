@@ -26,9 +26,10 @@ public class Player : MonoBehaviour {
     // ATTACKING
     [Header("Attacking")]
     [SerializeField] private Transform attackPos;
-    [SerializeField] private float attackRange = 0.5f;
+    [SerializeField] private Vector3 attackBoxSize;
     [SerializeField] private float damage = 3.0f;
     [SerializeField] private float knockbackPower = 5.0f;
+    private float attackChargeValue;
     private bool attackFinished;
 
     // HEALTH
@@ -136,8 +137,13 @@ public class Player : MonoBehaviour {
                 break;
             // FIX STATES BELOW
             case State.Charging:
-                if (Input.GetKeyUp(KeyCode.Space))
+                attackChargeValue += Time.deltaTime;
+
+                if (Input.GetKeyUp(KeyCode.Space)) {
+                    Attack(damage + attackChargeValue, knockbackPower + attackChargeValue);
                     state = State.Attacking;
+                    attackChargeValue = 0;
+                }
                 break;
             case State.Attacking:
                 if (attackFinished) {
@@ -181,6 +187,8 @@ public class Player : MonoBehaviour {
         hasJumped = false;
         currentSpirit = 0;
         spiritLevel = 1;
+        attackChargeValue = 0;
+        attackFinished = true;
     }
 
     // MOVEMENT HELPER FUNCTIONS
@@ -305,6 +313,23 @@ public class Player : MonoBehaviour {
         GameplayUI.Instance.AddHealthIcon(currentHealth - originalHealth);
     }
 
+    // ATTACKING
+
+    private void Attack(float damage, float knockbackPower) {
+        Collider2D[] enemiesToDamage = Physics2D.OverlapBoxAll(attackPos.position, new Vector2(attackBoxSize.x, attackBoxSize.y), 0, LayerMask.GetMask("Enemy"));
+        for (int i = 0; i < enemiesToDamage.Length; i++) {
+            if (enemiesToDamage[i].GetComponent<Enemy>().knockbackState == false) {
+                enemiesToDamage[i].GetComponent<Enemy>().TakeDamage(damage);
+                enemiesToDamage[i].GetComponent<Enemy>().Knockback(knockbackPower, isFacingRight);
+            }
+        }
+    }
+
+    private void OnDrawGizmosSelected() {
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireCube(attackPos.position, new Vector3(attackBoxSize.x, attackBoxSize.y, attackBoxSize.z));
+    }
+
     // TRIGGERS AND COLLISIONS
 
     private void OnTriggerEnter2D(Collider2D col) {
@@ -328,12 +353,4 @@ public class Player : MonoBehaviour {
             }
         }
     }
-
-    private void OnDrawGizmosSelected() {
-        Gizmos.color = Color.red;
-        Gizmos.DrawWireSphere(attackPos.position, attackRange);
-    }
-
-
-}
 */

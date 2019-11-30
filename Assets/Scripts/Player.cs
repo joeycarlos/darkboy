@@ -27,6 +27,8 @@ public class Player : MonoBehaviour {
     [Header("Attacking")]
     [SerializeField] private Transform attackPos;
     [SerializeField] private Vector3 attackBoxSize;
+    [SerializeField] private float impactBoxUnitWidth;
+    [SerializeField] private float impactBoxSizeHeight;
     [SerializeField] private float damage = 3.0f;
     [SerializeField] private float knockbackPower = 5.0f;
     private float attackChargeValue;
@@ -328,6 +330,44 @@ public class Player : MonoBehaviour {
     private void OnDrawGizmosSelected() {
         Gizmos.color = Color.red;
         Gizmos.DrawWireCube(attackPos.position, new Vector3(attackBoxSize.x, attackBoxSize.y, attackBoxSize.z));
+
+        if (isFacingRight) {
+            int numRaycasts = 10;
+            float horizontalDistance = impactBoxUnitWidth * 5;
+            float distBetweenRaycasts = horizontalDistance / (float)numRaycasts;
+
+            for (int i = 0; i < numRaycasts; i++) {
+                RaycastHit2D hit = Physics2D.Raycast(new Vector2(attackPos.position.x + attackBoxSize.x / 2 + i * distBetweenRaycasts, attackPos.position.y), -Vector2.up, attackBoxSize.y, LayerMask.GetMask("Platform"));
+                if (hit.collider == null) {
+                    horizontalDistance = Mathf.Clamp(horizontalDistance, 0, (i - 1) * distBetweenRaycasts);
+                    break;
+                }
+            }
+
+            Vector2 boxSpawnStartLocation = new Vector2(attackPos.position.x + attackBoxSize.x / 2, attackPos.position.y - attackBoxSize.y / 2);
+            Vector3 boxCenterLocation = new Vector3(boxSpawnStartLocation.x + horizontalDistance / 2, boxSpawnStartLocation.y + impactBoxSizeHeight / 2, 0);
+            Vector2 boxDimensions = new Vector2(horizontalDistance, impactBoxSizeHeight);
+            Gizmos.DrawWireCube(boxCenterLocation, boxDimensions);
+        }
+        else {
+            int numRaycasts = 10;
+            float horizontalDistance = impactBoxUnitWidth * 5;
+            float distBetweenRaycasts = horizontalDistance / (float)numRaycasts;
+
+            for (int i = 0; i < numRaycasts; i++) {
+                RaycastHit2D hit = Physics2D.Raycast(new Vector2(attackPos.position.x - attackBoxSize.x / 2 - i * distBetweenRaycasts, attackPos.position.y), -Vector2.up, attackBoxSize.y, LayerMask.GetMask("Platform"));
+                if (hit.collider == null) {
+                    horizontalDistance = Mathf.Clamp(horizontalDistance, 0, (i - 1) * distBetweenRaycasts);
+                    break;
+                }
+            }
+
+            Vector2 boxSpawnStartLocation = new Vector2(attackPos.position.x - attackBoxSize.x / 2, attackPos.position.y - attackBoxSize.y / 2);
+            Vector3 boxCenterLocation = new Vector3(boxSpawnStartLocation.x - horizontalDistance / 2, boxSpawnStartLocation.y + impactBoxSizeHeight / 2, 0);
+            Vector2 boxDimensions = new Vector2(horizontalDistance, impactBoxSizeHeight);
+            Gizmos.DrawWireCube(boxCenterLocation, boxDimensions);
+        }
+
     }
 
     // TRIGGERS AND COLLISIONS

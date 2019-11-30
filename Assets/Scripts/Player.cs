@@ -35,10 +35,9 @@ public class Player : MonoBehaviour
     private int currentHealth;
 
     // SELF KNOCKBACK
-    [Header("Self Knockback")]
-    [SerializeField] private float knockbackTime = 0.3f;
+    [Header("Hurt State")]
+    [SerializeField] private float hurtTime = 0.3f;
     [SerializeField] private float selfKnockbackPower = 3.0f;
-    public bool knockbackState;
 
     // SPIRIT
     [Header("Spirit")]
@@ -52,18 +51,17 @@ public class Player : MonoBehaviour
     private SpriteRenderer sr;
 
     // STATE
-    private State state;
+    [HideInInspector] public State state;
 
     // INPUTS
     float horizontalInput;
     bool isGrounded;
-    bool hurtStatePending;
-    bool hurtTimeFinished;
+    float hurtTimeCounter;
     bool attackFinished;
 
     // -----
 
-    enum State { Idle, Running, Jumping, Falling, Charging, Attacking, Hurt, Death, Pause };
+    public enum State { Idle, Running, Jumping, Falling, Charging, Attacking, Hurt, Death, Pause };
 
     void Start() {
         bc = GetComponent<BoxCollider2D>();
@@ -73,6 +71,9 @@ public class Player : MonoBehaviour
         state = State.Idle;
         isFacingRight = true;
         jumpTimeCounter = 0;
+        currentHealth = maxHealth;
+
+        InitPlayerUI();
     }
 
     void Update() {
@@ -82,9 +83,7 @@ public class Player : MonoBehaviour
 
         switch (state) {
             case State.Idle:
-                if (hurtStatePending)
-                    state = State.Hurt;
-                else if (Input.GetKeyDown(KeyCode.Space) && isGrounded == true)
+                if (Input.GetKeyDown(KeyCode.Space) && isGrounded == true)
                     state = State.Charging;
                 else if (Input.GetKeyDown(KeyCode.UpArrow) && isGrounded == true) {
                     EnterJumpState();
@@ -96,9 +95,7 @@ public class Player : MonoBehaviour
             case State.Running:
                 ProcessMovementInput();
 
-                if (hurtStatePending)
-                    state = State.Hurt;
-                else if (Input.GetKeyDown(KeyCode.Space) && isGrounded == true)
+                if (Input.GetKeyDown(KeyCode.Space) && isGrounded == true)
                     state = State.Charging;
                 else if (Input.GetKeyDown(KeyCode.UpArrow) && isGrounded == true) {
                     EnterJumpState();
@@ -113,17 +110,13 @@ public class Player : MonoBehaviour
                 rb.velocity = Vector2.up * jumpForce;
                 jumpTimeCounter -= Time.deltaTime;
 
-                if (hurtStatePending)
-                    state = State.Hurt;
-                else if (Input.GetKeyUp(KeyCode.UpArrow) || jumpTimeCounter <= 0)
+                if (Input.GetKeyUp(KeyCode.UpArrow) || jumpTimeCounter <= 0)
                     state = State.Falling;
                 break;
             case State.Falling:
                 ProcessMovementInput();
 
-                if (hurtStatePending)
-                    state = State.Hurt;
-                else if (Input.GetKeyDown(KeyCode.UpArrow) && isGrounded == true) {
+                if (Input.GetKeyDown(KeyCode.UpArrow) && isGrounded == true) {
                     EnterJumpState();
                     state = State.Jumping;
                 }
@@ -133,19 +126,22 @@ public class Player : MonoBehaviour
                     state = State.Idle;
                 break;
             case State.Hurt:
-                if (hurtTimeFinished == true) {
-                    if (Input.GetKeyDown(KeyCode.UpArrow) && isGrounded == true )
+                hurtTimeCounter = hurtTimeCounter - Time.deltaTime;
+                if (hurtTimeCounter <= 0) {
+                    if (Input.GetKeyDown(KeyCode.UpArrow) && isGrounded == true)
                         state = State.Jumping;
                     else if (horizontalInput != 0 && isGrounded == true)
                         state = State.Running;
                     else if (horizontalInput == 0 && isGrounded == true)
                         state = State.Idle;
+                    else if (isGrounded == false)
+                        state = State.Falling;
+
+                    ExitHurtState();
                 }
                 break;
             case State.Charging:
-                if (hurtStatePending)
-                    state = State.Hurt;
-                else if (Input.GetKeyUp(KeyCode.Space))
+                if (Input.GetKeyUp(KeyCode.Space))
                     state = State.Attacking;
                 break;
             case State.Attacking:
@@ -158,8 +154,6 @@ public class Player : MonoBehaviour
                         state = State.Jumping;
                     else if (Input.GetKeyDown(KeyCode.Space))
                         state = State.Charging;
-                    else if (hurtStatePending)
-                        state = State.Hurt;
                 }
                 break;
             default:
@@ -226,14 +220,69 @@ public class Player : MonoBehaviour
         
     }
 
-    public void TakeDamage(float damage) {
+    public bool isHittable() {
+        if (state == State.Hurt)
+            return false;
+        else
+            return true;
+    }
 
+    public void EnterHurtState(int damage, bool isRightDirection) {
+        state = State.Hurt;
+
+        TakeDamage(damage);
+        Knockback(isRightDirection);
+        sr.color = Color.red;
+        hurtTimeCounter = hurtTime;
+    }
+
+    public void ExitHurtState() {
+        sr.color = Color.white;
+    }
+
+    public void TakeDamage(int damage) {
+        int originalHealth = currentHealth;
+
+        currentHealth = currentHealth - damage;
+        currentHealth = Mathf.Clamp(currentHealth, 0, maxHealth);
+
+        GameplayUI.Instance.RemoveHealthIcon(-(currentHealth - originalHealth));
+
+        if (currentHealth <= 0) {
+            Death();
+        }
     }
 
     public void Knockback(bool isRightDirection) {
+        rb.velocity = Vector2.zero;
 
+        Vector2 knockbackVector;
+        if (isRightDirection) {
+            knockbackVector = new Vector2(knockbackPower, knockbackPower + 2.0f);
+            Debug.Log(knockbackVector);
+        }
+        else {
+            knockbackVector = new Vector2(-knockbackPower, knockbackPower + 2.0f);
+        }
+        rb.AddForce(knockbackVector, ForceMode2D.Impulse);
     }
 
+
+
+    void Death() {
+        Destroy(gameObject);
+    }
+
+    void InitPlayerUI() {
+        GameplayUI.Instance.GenerateHealthUI(maxHealth);
+
+        /*
+        GameplayUI.Instance.UpdateSpiritLevelValue(spiritLevel);
+        GameplayUI.Instance.GetComponentInChildren<SpiritBar>().min = 0;
+        GameplayUI.Instance.GetComponentInChildren<SpiritBar>().max = spiritLevelReqs[spiritLevel - 1];
+        GameplayUI.Instance.GetComponentInChildren<SpiritBar>().SetSpirit(currentSpirit);
+        */
+    }
 
     /*
     // Start is called before the first frame update

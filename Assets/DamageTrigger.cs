@@ -8,6 +8,20 @@ public class DamageTrigger : MonoBehaviour {
     private void OnTriggerStay2D(Collider2D col) {
         if (col.gameObject.layer == LayerMask.NameToLayer("Player")) {
             Player p = col.gameObject.GetComponent<Player>();
+            if (p.isHittable()) {
+                if (transform.position.x < p.transform.position.x)
+                    p.EnterHurtState(damage, true);
+                else if (transform.position.x > p.transform.position.x) {
+                    p.EnterHurtState(damage, false);
+                }
+            }
+        }
+    }
+
+    /*
+    private void OnTriggerStay2D(Collider2D col) {
+        if (col.gameObject.layer == LayerMask.NameToLayer("Player")) {
+            Player p = col.gameObject.GetComponent<Player>();
             if (p.knockbackState == false) {
                 p.TakeDamage(damage);
                 if (transform.position.x < p.transform.position.x)
@@ -18,4 +32,5 @@ public class DamageTrigger : MonoBehaviour {
             }
         }
     }
+    */
 }

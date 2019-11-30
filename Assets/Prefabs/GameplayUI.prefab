@@ -540,7 +540,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8867981911817357074}
-  - component: {fileID: 5189691787905333314}
   m_Layer: 5
   m_Name: SpiritBar
   m_TagString: Untagged
@@ -570,21 +569,6 @@ RectTransform:
   m_AnchoredPosition: {x: 184.3, y: -64}
   m_SizeDelta: {x: 150, y: 15}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &5189691787905333314
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6951088371091402574}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: dd53e6e22fc204f49a2dad0efdf0d993, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  spiritBarImage: {fileID: 6394513950425980104}
-  min: 0
-  max: 0
 --- !u!1 &8867726342499030712
 GameObject:
   m_ObjectHideFlags: 0
@@ -779,3 +763,6 @@ MonoBehaviour:
   healthIcon: {fileID: 2718700715839235454, guid: 243cb278460381c41aaf0026047d1b25,
     type: 3}
   spiritLevelValue: {fileID: 6273746823750879867}
+  spiritBarImage: {fileID: 6394513950425980104}
+  spiritBarMin: 0
+  spiritBarMax: 0

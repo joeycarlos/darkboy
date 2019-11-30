@@ -18,23 +18,27 @@ public class GameplayUI : MonoBehaviour
         }
     }
 
-    public Text healthLabel;
-    public Image healthIcon;
-    public Text spiritLevelValue;
-    public Image spiritBarImage;
+    // HEALTH
+    [Header("Health")]
+    [SerializeField] private Text healthLabel;
+    [SerializeField] private Image healthIcon;
+    private List<Image> healthIcons;
 
-    public int spiritBarMin;
-    public int spiritBarMax;
-
+    // SPIRIT
+    [Header("Spirit")]
+    [SerializeField] private Text spiritLevelValue;
+    [SerializeField] private Image spiritBarImage;
+    [HideInInspector] public int spiritBarMin;
+    [HideInInspector] public int spiritBarMax;
     private int mCurrentValue;
     private float mCurrentPercent;
-
-    private List<Image> healthIcons;
 
     void Awake() {
         _instance = this;
         healthIcons = new List<Image>();
     }
+
+    // HEALTH UI HELPER FUNCTIONS
 
     public void GenerateHealthUI(int health) {
         for (int i = 0; i < health; i++) {
@@ -53,7 +57,6 @@ public class GameplayUI : MonoBehaviour
     }
 
     public void AddHealthIcon(int value) {
-
         int originalHealth = healthIcons.Count;
 
         for (int i = 0 ; i <  value; i++) {
@@ -62,6 +65,8 @@ public class GameplayUI : MonoBehaviour
             healthIcons.Add(iHealthIcon);
         }
     }
+
+    // SPIRIT UI HELPER FUNCTIONS
 
     public void UpdateSpiritLevelValue(int newLevel) {
         spiritLevelValue.text = newLevel.ToString();

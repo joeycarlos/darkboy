@@ -262,8 +262,8 @@ MonoBehaviour:
   attackRange: 0.5
   damage: 3
   knockbackPower: 5
-  selfKnockbackPower: 3
   maxHealth: 5
-  knockbackState: 0
-  knockbackTime: 0.3
+  hurtTime: 0.3
+  selfKnockbackPower: 3
   spiritLevelReqs: 2d00000064000000aa000000fa000000
+  state: 0

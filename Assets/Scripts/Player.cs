@@ -14,12 +14,12 @@ public class Player : MonoBehaviour
     [SerializeField] private float jumpForce = 5.0f;
     [SerializeField] private float maxJumpTime = 0.7f;
     private float jumpTimeCounter;
-    private bool isJumping;
+    private bool hasJumped;
 
     // GROUND CHECK
     [Header("Ground Check")]
     [SerializeField] private float isGroundedRememberTime = 0.15f;
-    private float isGroundedRemember;
+    private float isGroundedRememberCounter;
     private int platformLayer;
 
     // ATTACKING
@@ -72,6 +72,8 @@ public class Player : MonoBehaviour
         isFacingRight = true;
         jumpTimeCounter = 0;
         currentHealth = maxHealth;
+        isGroundedRememberCounter = 0;
+        hasJumped = false;
 
         InitPlayerUI();
     }
@@ -79,13 +81,13 @@ public class Player : MonoBehaviour
     void Update() {
         ReadInputs();
         isGrounded = CheckGround();
-        Debug.Log(state);
+        Debug.Log(hasJumped);
 
         switch (state) {
             case State.Idle:
                 if (Input.GetKeyDown(KeyCode.Space) && isGrounded == true)
                     state = State.Charging;
-                else if (Input.GetKeyDown(KeyCode.UpArrow) && isGrounded == true) {
+                else if (Input.GetKeyDown(KeyCode.UpArrow) && (isGrounded == true || isGroundedRememberCounter >= 0) && !hasJumped) {
                     EnterJumpState();
                     state = State.Jumping;
                 }
@@ -97,7 +99,7 @@ public class Player : MonoBehaviour
 
                 if (Input.GetKeyDown(KeyCode.Space) && isGrounded == true)
                     state = State.Charging;
-                else if (Input.GetKeyDown(KeyCode.UpArrow) && isGrounded == true) {
+                else if (Input.GetKeyDown(KeyCode.UpArrow) && (isGrounded == true || isGroundedRememberCounter >= 0) && !hasJumped) {
                     EnterJumpState();
                     state = State.Jumping;
                 }
@@ -106,17 +108,22 @@ public class Player : MonoBehaviour
                 break;
             case State.Jumping:
                 ProcessMovementInput();
+                isGroundedRememberCounter -= Time.deltaTime;
 
+                hasJumped = true;
                 rb.velocity = Vector2.up * jumpForce;
                 jumpTimeCounter -= Time.deltaTime;
 
-                if (Input.GetKeyUp(KeyCode.UpArrow) || jumpTimeCounter <= 0)
+                if (Input.GetKeyUp(KeyCode.UpArrow) || jumpTimeCounter <= 0) {
                     state = State.Falling;
+                }
+                    
                 break;
             case State.Falling:
                 ProcessMovementInput();
+                isGroundedRememberCounter -= Time.deltaTime;
 
-                if (Input.GetKeyDown(KeyCode.UpArrow) && isGrounded == true) {
+                if (Input.GetKeyDown(KeyCode.UpArrow) && (isGrounded == true || isGroundedRememberCounter >= 0) && !hasJumped) {
                     EnterJumpState();
                     state = State.Jumping;
                 }
@@ -127,8 +134,10 @@ public class Player : MonoBehaviour
                 break;
             case State.Hurt:
                 hurtTimeCounter = hurtTimeCounter - Time.deltaTime;
+                isGroundedRememberCounter -= Time.deltaTime;
+
                 if (hurtTimeCounter <= 0) {
-                    if (Input.GetKeyDown(KeyCode.UpArrow) && isGrounded == true)
+                    if (Input.GetKeyDown(KeyCode.UpArrow) && (isGrounded == true || isGroundedRememberCounter >= 0) && !hasJumped)
                         state = State.Jumping;
                     else if (horizontalInput != 0 && isGrounded == true)
                         state = State.Running;
@@ -140,6 +149,7 @@ public class Player : MonoBehaviour
                     ExitHurtState();
                 }
                 break;
+            // FIX STATES BELOW
             case State.Charging:
                 if (Input.GetKeyUp(KeyCode.Space))
                     state = State.Attacking;
@@ -191,8 +201,6 @@ public class Player : MonoBehaviour
     }
 
     bool CheckGround() {
-        if (isGroundedRemember > 0)
-            isGroundedRemember -= Time.deltaTime;
 
         bool result1, result2, result3;
 
@@ -212,7 +220,9 @@ public class Player : MonoBehaviour
         else result3 = true;
 
         if (result1 == true || result2 == true || result3 == true) {
-            isGroundedRemember = isGroundedRememberTime;
+            isGroundedRememberCounter = isGroundedRememberTime;
+            if (hasJumped == true)
+                hasJumped = false;
             return true;
         }
         else

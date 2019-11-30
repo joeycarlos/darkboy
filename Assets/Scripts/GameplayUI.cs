@@ -21,6 +21,13 @@ public class GameplayUI : MonoBehaviour
     public Text healthLabel;
     public Image healthIcon;
     public Text spiritLevelValue;
+    public Image spiritBarImage;
+
+    public int spiritBarMin;
+    public int spiritBarMax;
+
+    private int mCurrentValue;
+    private float mCurrentPercent;
 
     private List<Image> healthIcons;
 
@@ -58,5 +65,18 @@ public class GameplayUI : MonoBehaviour
 
     public void UpdateSpiritLevelValue(int newLevel) {
         spiritLevelValue.text = newLevel.ToString();
+    }
+
+    public void SetSpirit(int spirit) {
+        if (spiritBarMax - spiritBarMin == 0) {
+            mCurrentValue = 0;
+            mCurrentPercent = 0;
+        }
+        else {
+            mCurrentValue = spirit;
+            mCurrentPercent = (float)mCurrentValue / (float)(spiritBarMax - spiritBarMin);
+        }
+
+        spiritBarImage.fillAmount = mCurrentPercent;
     }
 }

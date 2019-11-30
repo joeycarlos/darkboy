@@ -167,9 +167,9 @@ public class Player : MonoBehaviour {
     void InitPlayerUI() {
         GameplayUI.Instance.GenerateHealthUI(maxHealth);
         GameplayUI.Instance.UpdateSpiritLevelValue(spiritLevel);
-        GameplayUI.Instance.GetComponentInChildren<SpiritBar>().min = 0;
-        GameplayUI.Instance.GetComponentInChildren<SpiritBar>().max = spiritLevelReqs[spiritLevel - 1];
-        GameplayUI.Instance.GetComponentInChildren<SpiritBar>().SetSpirit(currentSpirit);
+        GameplayUI.Instance.spiritBarMin = 0;
+        GameplayUI.Instance.spiritBarMax = spiritLevelReqs[spiritLevel - 1];
+        GameplayUI.Instance.SetSpirit(currentSpirit);
     }
 
     void InitPlayerVars() {
@@ -290,7 +290,7 @@ public class Player : MonoBehaviour {
         } else {
             currentSpirit += value;
         }
-        GameplayUI.Instance.GetComponentInChildren<SpiritBar>().SetSpirit(currentSpirit);
+        GameplayUI.Instance.SetSpirit(currentSpirit);
     }
 
     void LevelUp() {

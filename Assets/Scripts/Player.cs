@@ -329,45 +329,46 @@ public class Player : MonoBehaviour {
 
     private void OnDrawGizmosSelected() {
         Gizmos.color = Color.red;
-        Gizmos.DrawWireCube(attackPos.position, new Vector3(attackBoxSize.x, attackBoxSize.y, attackBoxSize.z));
+        // Gizmos.DrawWireCube(attackPos.position, new Vector3(attackBoxSize.x, attackBoxSize.y, attackBoxSize.z));
 
-        if (isFacingRight) {
-            int numRaycasts = 10;
-            float horizontalDistance = impactBoxUnitWidth * 5;
-            float distBetweenRaycasts = horizontalDistance / (float)numRaycasts;
+        if (bc != null) {
+            if (isFacingRight) {
+                int numRaycasts = 20;
+                float horizontalDistance = 10.0f; // will be calculated based off of charge and level
+                float distBetweenRaycasts = horizontalDistance / (float)numRaycasts;
 
-            for (int i = 0; i < numRaycasts; i++) {
-                RaycastHit2D hit = Physics2D.Raycast(new Vector2(attackPos.position.x + attackBoxSize.x / 2 + i * distBetweenRaycasts, attackPos.position.y), -Vector2.up, attackBoxSize.y, LayerMask.GetMask("Platform"));
-                if (hit.collider == null) {
-                    horizontalDistance = Mathf.Clamp(horizontalDistance, 0, (i - 1) * distBetweenRaycasts);
-                    break;
+                for (int i = 0; i < numRaycasts; i++) {
+                    RaycastHit2D hit = Physics2D.Raycast(new Vector2(transform.position.x + i * distBetweenRaycasts, transform.position.y), -Vector2.up, bc.bounds.extents.y + 0.1f, LayerMask.GetMask("Platform"));
+                    if (hit.collider == null) {
+                        horizontalDistance = Mathf.Clamp(horizontalDistance, 0, (i - 1) * distBetweenRaycasts);
+                        break;
+                    }
                 }
+
+                Vector2 boxSpawnStartLocation = new Vector2(transform.position.x, transform.position.y - bc.bounds.extents.y);
+                Vector3 boxCenterLocation = new Vector3(boxSpawnStartLocation.x + horizontalDistance / 2, boxSpawnStartLocation.y + impactBoxSizeHeight / 2, 0);
+                Vector2 boxDimensions = new Vector2(horizontalDistance, impactBoxSizeHeight);
+                Gizmos.DrawWireCube(boxCenterLocation, boxDimensions);
             }
+            else {
+                int numRaycasts = 20;
+                float horizontalDistance = 10.0f; // will be calculated based off of charge and level
+                float distBetweenRaycasts = horizontalDistance / (float)numRaycasts;
 
-            Vector2 boxSpawnStartLocation = new Vector2(attackPos.position.x + attackBoxSize.x / 2, attackPos.position.y - attackBoxSize.y / 2);
-            Vector3 boxCenterLocation = new Vector3(boxSpawnStartLocation.x + horizontalDistance / 2, boxSpawnStartLocation.y + impactBoxSizeHeight / 2, 0);
-            Vector2 boxDimensions = new Vector2(horizontalDistance, impactBoxSizeHeight);
-            Gizmos.DrawWireCube(boxCenterLocation, boxDimensions);
-        }
-        else {
-            int numRaycasts = 10;
-            float horizontalDistance = impactBoxUnitWidth * 5;
-            float distBetweenRaycasts = horizontalDistance / (float)numRaycasts;
-
-            for (int i = 0; i < numRaycasts; i++) {
-                RaycastHit2D hit = Physics2D.Raycast(new Vector2(attackPos.position.x - attackBoxSize.x / 2 - i * distBetweenRaycasts, attackPos.position.y), -Vector2.up, attackBoxSize.y, LayerMask.GetMask("Platform"));
-                if (hit.collider == null) {
-                    horizontalDistance = Mathf.Clamp(horizontalDistance, 0, (i - 1) * distBetweenRaycasts);
-                    break;
+                for (int i = 0; i < numRaycasts; i++) {
+                    RaycastHit2D hit = Physics2D.Raycast(new Vector2(transform.position.x - i * distBetweenRaycasts, transform.position.y), -Vector2.up, bc.bounds.extents.y + 0.1f, LayerMask.GetMask("Platform"));
+                    if (hit.collider == null) {
+                        horizontalDistance = Mathf.Clamp(horizontalDistance, 0, (i - 1) * distBetweenRaycasts);
+                        break;
+                    }
                 }
+
+                Vector2 boxSpawnStartLocation = new Vector2(transform.position.x, transform.position.y - bc.bounds.extents.y);
+                Vector3 boxCenterLocation = new Vector3(boxSpawnStartLocation.x - horizontalDistance / 2, boxSpawnStartLocation.y + impactBoxSizeHeight / 2, 0);
+                Vector2 boxDimensions = new Vector2(horizontalDistance, impactBoxSizeHeight);
+                Gizmos.DrawWireCube(boxCenterLocation, boxDimensions);
             }
-
-            Vector2 boxSpawnStartLocation = new Vector2(attackPos.position.x - attackBoxSize.x / 2, attackPos.position.y - attackBoxSize.y / 2);
-            Vector3 boxCenterLocation = new Vector3(boxSpawnStartLocation.x - horizontalDistance / 2, boxSpawnStartLocation.y + impactBoxSizeHeight / 2, 0);
-            Vector2 boxDimensions = new Vector2(horizontalDistance, impactBoxSizeHeight);
-            Gizmos.DrawWireCube(boxCenterLocation, boxDimensions);
         }
-
     }
 
     // TRIGGERS AND COLLISIONS

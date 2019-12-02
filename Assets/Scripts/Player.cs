@@ -142,7 +142,7 @@ public class Player : MonoBehaviour {
                 attackChargeValue += Time.deltaTime;
 
                 if (Input.GetKeyUp(KeyCode.Space)) {
-                    Attack(damage + attackChargeValue, knockbackPower + attackChargeValue);
+                    Attack(damage + attackChargeValue, knockbackPower);
                     state = State.Attacking;
                     attackChargeValue = 0;
                 }
@@ -280,9 +280,9 @@ public class Player : MonoBehaviour {
 
         Vector2 knockbackVector;
         if (isRightDirection) {
-            knockbackVector = new Vector2(knockbackPower, knockbackPower + 2.0f);
+            knockbackVector = new Vector2(selfKnockbackPower, knockbackPower + 2.0f);
         } else {
-            knockbackVector = new Vector2(-knockbackPower, knockbackPower + 2.0f);
+            knockbackVector = new Vector2(-selfKnockbackPower, knockbackPower + 2.0f);
         }
         rb.AddForce(knockbackVector, ForceMode2D.Impulse);
     }

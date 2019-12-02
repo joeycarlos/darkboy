@@ -260,8 +260,10 @@ MonoBehaviour:
   isGroundedRememberTime: 0.15
   attackPos: {fileID: 4760060854269940541}
   attackBoxSize: {x: 1, y: 1.5, z: 0}
+  impactBoxUnitWidth: 1
+  impactBoxSizeHeight: 0.5
   damage: 1
-  knockbackPower: 2
+  knockbackPower: 3
   maxHealth: 5
   hurtTime: 0.3
   selfKnockbackPower: 3

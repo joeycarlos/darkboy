@@ -31,9 +31,12 @@ public class Player : MonoBehaviour {
     [SerializeField] private float impactBoxSizeHeight;
     [SerializeField] private float damage = 3.0f;
     [SerializeField] private float knockbackPower = 5.0f;
-    [SerializeField] private float maxChargeTime = 5.0f;
+    [SerializeField] private float maxChargeTime = 3.0f;
+    [SerializeField] private GameObject attackIndicator;
     private float attackChargeValue;
     private bool attackFinished;
+    private GameObject iAttackIndicator;
+    private bool maxIndicatorRangeReached;
 
     // HEALTH
     [Header("Health")]
@@ -74,8 +77,9 @@ public class Player : MonoBehaviour {
 
         switch (state) {
             case State.Idle:
-                if (Input.GetKeyDown(KeyCode.Space) && isGrounded == true)
+                if (Input.GetKeyDown(KeyCode.Space) && isGrounded == true) {
                     state = State.Charging;
+                }
                 else if (Input.GetKeyDown(KeyCode.UpArrow) && (isGrounded == true || isGroundedRememberCounter >= 0) && !hasJumped) {
                     EnterJumpState();
                     state = State.Jumping;
@@ -86,8 +90,9 @@ public class Player : MonoBehaviour {
             case State.Running:
                 ProcessMovementInput();
 
-                if (Input.GetKeyDown(KeyCode.Space) && isGrounded == true)
+                if (Input.GetKeyDown(KeyCode.Space) && isGrounded == true) {
                     state = State.Charging;
+                }
                 else if (Input.GetKeyDown(KeyCode.UpArrow) && (isGrounded == true || isGroundedRememberCounter >= 0) && !hasJumped) {
                     EnterJumpState();
                     state = State.Jumping;
@@ -141,11 +146,13 @@ public class Player : MonoBehaviour {
             // FIX STATES BELOW
             case State.Charging:
                 attackChargeValue = Mathf.Clamp(attackChargeValue += Time.deltaTime, 0.0f, maxChargeTime);
+                UpdateAttackIndicator(CalcRange(attackChargeValue / maxChargeTime), isFacingRight);
 
                 if (Input.GetKeyUp(KeyCode.Space)) {
                     Attack(CalcRange(attackChargeValue/maxChargeTime), CalcDamage(attackChargeValue/maxChargeTime), CalcKnockback(attackChargeValue/maxChargeTime), isFacingRight);
                     state = State.Attacking;
                     attackChargeValue = 0;
+                    Destroy(iAttackIndicator);
                 }
                 break;
             case State.Attacking:
@@ -156,8 +163,10 @@ public class Player : MonoBehaviour {
                         state = State.Running;
                     else if (Input.GetKeyDown(KeyCode.UpArrow))
                         state = State.Jumping;
-                    else if (Input.GetKeyDown(KeyCode.Space))
+                    else if (Input.GetKeyDown(KeyCode.Space)) {
                         state = State.Charging;
+                    }
+                        
                 }
                 break;
             default:
@@ -318,11 +327,61 @@ public class Player : MonoBehaviour {
 
     // ATTACKING
 
+    private void UpdateAttackIndicator(float range, bool isFacingRight) {
+        if (iAttackIndicator == null) {
+            iAttackIndicator = Instantiate(attackIndicator, new Vector3(transform.position.x + bc.bounds.extents.x, transform.position.y, 0), Quaternion.identity);
+            maxIndicatorRangeReached = false;
+        }
+
+        if (maxIndicatorRangeReached == false) {
+            if (isFacingRight) {
+                int numRaycasts = 30;
+                float horizontalDistance = range;
+                float distBetweenRaycasts = horizontalDistance / (float)numRaycasts;
+
+                for (int i = 0; i < numRaycasts; i++) {
+                    RaycastHit2D hit = Physics2D.Raycast(new Vector2(transform.position.x + i * distBetweenRaycasts, transform.position.y), -Vector2.up, bc.bounds.extents.y + 0.1f, LayerMask.GetMask("Platform"));
+                    if (hit.collider == null) {
+                        horizontalDistance = Mathf.Clamp(horizontalDistance, 0, (i - 1) * distBetweenRaycasts);
+                        maxIndicatorRangeReached = true;
+                        break;
+                    }
+                }
+                Vector2 boxSpawnStartLocation = new Vector2(transform.position.x, transform.position.y - bc.bounds.extents.y);
+                Vector3 boxCenterLocation = new Vector3(boxSpawnStartLocation.x + horizontalDistance / 2, boxSpawnStartLocation.y + impactBoxSizeHeight / 2, 0);
+
+                iAttackIndicator.transform.position = boxCenterLocation;
+                iAttackIndicator.transform.localScale = new Vector3(horizontalDistance, impactBoxSizeHeight, 0);
+            }
+            else {
+                int numRaycasts = 30;
+                float horizontalDistance = range; // will be calculated based off of charge and level
+                float distBetweenRaycasts = horizontalDistance / (float)numRaycasts;
+
+                for (int i = 0; i < numRaycasts; i++) {
+                    RaycastHit2D hit = Physics2D.Raycast(new Vector2(transform.position.x - i * distBetweenRaycasts, transform.position.y), -Vector2.up, bc.bounds.extents.y + 0.1f, LayerMask.GetMask("Platform"));
+                    if (hit.collider == null) {
+                        horizontalDistance = Mathf.Clamp(horizontalDistance, 0, (i - 1) * distBetweenRaycasts);
+                        maxIndicatorRangeReached = true;
+                        break;
+                    }
+                }
+
+                Vector2 boxSpawnStartLocation = new Vector2(transform.position.x, transform.position.y - bc.bounds.extents.y);
+                Vector3 boxCenterLocation = new Vector3(boxSpawnStartLocation.x - horizontalDistance / 2, boxSpawnStartLocation.y + impactBoxSizeHeight / 2, 0);
+
+                iAttackIndicator.transform.position = boxCenterLocation;
+                iAttackIndicator.transform.localScale = new Vector3(horizontalDistance, impactBoxSizeHeight, 0);
+            }
+        }
+
+    }
+
     private void Attack(float range, float damage, float knockback, bool isFacingRight) {
         Collider2D[] enemiesToDamage;
 
         if (isFacingRight) {
-            int numRaycasts = 20;
+            int numRaycasts = 30;
             float horizontalDistance = range; // will be calculated based off of charge and level
             float distBetweenRaycasts = horizontalDistance / (float)numRaycasts;
 
@@ -341,7 +400,7 @@ public class Player : MonoBehaviour {
             enemiesToDamage = Physics2D.OverlapBoxAll(boxCenterLocation, boxDimensions, 0, LayerMask.GetMask("Enemy"));
         }
         else {
-            int numRaycasts = 20;
+            int numRaycasts = 30;
             float horizontalDistance = 10.0f; // will be calculated based off of charge and level
             float distBetweenRaycasts = horizontalDistance / (float)numRaycasts;
 
@@ -389,7 +448,7 @@ public class Player : MonoBehaviour {
 
         if (bc != null) {
             if (isFacingRight) {
-                int numRaycasts = 20;
+                int numRaycasts = 30;
                 float horizontalDistance = 10.0f; // will be calculated based off of charge and level
                 float distBetweenRaycasts = horizontalDistance / (float)numRaycasts;
 
@@ -407,7 +466,7 @@ public class Player : MonoBehaviour {
                 Gizmos.DrawWireCube(boxCenterLocation, boxDimensions);
             }
             else {
-                int numRaycasts = 20;
+                int numRaycasts = 30;
                 float horizontalDistance = 10.0f; // will be calculated based off of charge and level
                 float distBetweenRaycasts = horizontalDistance / (float)numRaycasts;
 

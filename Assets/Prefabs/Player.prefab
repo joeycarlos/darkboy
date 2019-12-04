@@ -264,8 +264,11 @@ MonoBehaviour:
   impactBoxSizeHeight: 0.5
   damage: 1
   knockbackPower: 3
+  maxChargeTime: 5
+  attackIndicator: {fileID: 5460108252914780515, guid: 92d2b0f380b63404a90d01f6078829b7,
+    type: 3}
   maxHealth: 5
   hurtTime: 0.3
   selfKnockbackPower: 3
-  spiritLevelReqs: 2d00000064000000aa000000fa000000
+  spiritLevelReqs: 2d00000064000000aa000000fa00000090010000
   state: 0

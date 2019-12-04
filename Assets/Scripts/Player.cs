@@ -31,6 +31,7 @@ public class Player : MonoBehaviour {
     [SerializeField] private float impactBoxSizeHeight;
     [SerializeField] private float damage = 3.0f;
     [SerializeField] private float knockbackPower = 5.0f;
+    [SerializeField] private float maxChargeTime = 5.0f;
     private float attackChargeValue;
     private bool attackFinished;
 
@@ -139,10 +140,10 @@ public class Player : MonoBehaviour {
                 break;
             // FIX STATES BELOW
             case State.Charging:
-                attackChargeValue += Time.deltaTime;
+                attackChargeValue = Mathf.Clamp(attackChargeValue += Time.deltaTime, 0.0f, maxChargeTime);
 
                 if (Input.GetKeyUp(KeyCode.Space)) {
-                    Attack(damage + attackChargeValue, knockbackPower);
+                    Attack(CalcRange(attackChargeValue/maxChargeTime), CalcDamage(attackChargeValue/maxChargeTime), CalcKnockback(attackChargeValue/maxChargeTime), isFacingRight);
                     state = State.Attacking;
                     attackChargeValue = 0;
                 }
@@ -317,15 +318,70 @@ public class Player : MonoBehaviour {
 
     // ATTACKING
 
-    private void Attack(float damage, float knockbackPower) {
-        Collider2D[] enemiesToDamage = Physics2D.OverlapBoxAll(attackPos.position, new Vector2(attackBoxSize.x, attackBoxSize.y), 0, LayerMask.GetMask("Enemy"));
+    private void Attack(float range, float damage, float knockback, bool isFacingRight) {
+        Collider2D[] enemiesToDamage;
+
+        if (isFacingRight) {
+            int numRaycasts = 20;
+            float horizontalDistance = range; // will be calculated based off of charge and level
+            float distBetweenRaycasts = horizontalDistance / (float)numRaycasts;
+
+            for (int i = 0; i < numRaycasts; i++) {
+                RaycastHit2D hit = Physics2D.Raycast(new Vector2(transform.position.x + i * distBetweenRaycasts, transform.position.y), -Vector2.up, bc.bounds.extents.y + 0.1f, LayerMask.GetMask("Platform"));
+                if (hit.collider == null) {
+                    horizontalDistance = Mathf.Clamp(horizontalDistance, 0, (i - 1) * distBetweenRaycasts);
+                    break;
+                }
+            }
+
+            Vector2 boxSpawnStartLocation = new Vector2(transform.position.x, transform.position.y - bc.bounds.extents.y);
+            Vector3 boxCenterLocation = new Vector3(boxSpawnStartLocation.x + horizontalDistance / 2, boxSpawnStartLocation.y + impactBoxSizeHeight / 2, 0);
+            Vector2 boxDimensions = new Vector2(horizontalDistance, impactBoxSizeHeight);
+            // Gizmos.DrawWireCube(boxCenterLocation, boxDimensions);
+            enemiesToDamage = Physics2D.OverlapBoxAll(boxCenterLocation, boxDimensions, 0, LayerMask.GetMask("Enemy"));
+        }
+        else {
+            int numRaycasts = 20;
+            float horizontalDistance = 10.0f; // will be calculated based off of charge and level
+            float distBetweenRaycasts = horizontalDistance / (float)numRaycasts;
+
+            for (int i = 0; i < numRaycasts; i++) {
+                RaycastHit2D hit = Physics2D.Raycast(new Vector2(transform.position.x - i * distBetweenRaycasts, transform.position.y), -Vector2.up, bc.bounds.extents.y + 0.1f, LayerMask.GetMask("Platform"));
+                if (hit.collider == null) {
+                    horizontalDistance = Mathf.Clamp(horizontalDistance, 0, (i - 1) * distBetweenRaycasts);
+                    break;
+                }
+            }
+
+            Vector2 boxSpawnStartLocation = new Vector2(transform.position.x, transform.position.y - bc.bounds.extents.y);
+            Vector3 boxCenterLocation = new Vector3(boxSpawnStartLocation.x - horizontalDistance / 2, boxSpawnStartLocation.y + impactBoxSizeHeight / 2, 0);
+            Vector2 boxDimensions = new Vector2(horizontalDistance, impactBoxSizeHeight);
+            // Gizmos.DrawWireCube(boxCenterLocation, boxDimensions);
+            enemiesToDamage = Physics2D.OverlapBoxAll(boxCenterLocation, boxDimensions, 0, LayerMask.GetMask("Enemy"));
+        }
+
         for (int i = 0; i < enemiesToDamage.Length; i++) {
             if (enemiesToDamage[i].GetComponent<Enemy>().knockbackState == false) {
                 enemiesToDamage[i].GetComponent<Enemy>().TakeDamage(damage);
-                enemiesToDamage[i].GetComponent<Enemy>().Knockback(knockbackPower, isFacingRight);
+                enemiesToDamage[i].GetComponent<Enemy>().Knockback(knockback, isFacingRight);
             }
         }
+
     }
+
+    private float CalcRange(float attackChargeValue) {
+        return 1 + (0.5f * spiritLevel + 0.5f) * (2.0f * attackChargeValue + 1.0f);
+    }
+
+    private float CalcDamage(float attackChargeValue) {
+        return spiritLevel * (6.0f * attackChargeValue + 1);
+    }
+
+    private float CalcKnockback(float attackChargeValue) {
+        return 3 + (0.5f * attackChargeValue + (spiritLevel - 1) * 0.125f) * 5.0f;
+    }
+
+
 
     private void OnDrawGizmosSelected() {
         Gizmos.color = Color.red;

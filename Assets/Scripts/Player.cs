@@ -420,9 +420,11 @@ public class Player : MonoBehaviour {
         }
 
         for (int i = 0; i < enemiesToDamage.Length; i++) {
-            if (enemiesToDamage[i].GetComponent<Enemy>().knockbackState == false) {
-                enemiesToDamage[i].GetComponent<Enemy>().TakeDamage(damage);
-                enemiesToDamage[i].GetComponent<Enemy>().Knockback(knockback, isFacingRight);
+            Enemy enemy = enemiesToDamage[i].GetComponent<Enemy>();
+            if (enemy.state != Enemy.State.Hurt) {
+                enemy.EnterHurtState(damage, knockback, enemy.transform.position.x - transform.position.x);
+                // enemiesToDamage[i].GetComponent<Enemy>().TakeDamage(damage);
+                // enemiesToDamage[i].GetComponent<Enemy>().Knockback(knockback, isFacingRight);
             }
         }
 

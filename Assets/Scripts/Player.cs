@@ -31,9 +31,10 @@ public class Player : MonoBehaviour {
     [SerializeField] private float damage = 3.0f;
     [SerializeField] private float knockbackPower = 5.0f;
     [SerializeField] private float maxChargeTime = 3.0f;
+    [SerializeField] private float attackAnimTime = 0.25f;
     [SerializeField] private GameObject attackIndicator;
     private float attackChargeValue;
-    private bool attackFinished;
+    private float attackAnimCounter;
     private GameObject iAttackIndicator;
     private bool maxIndicatorRangeReached;
 
@@ -59,6 +60,10 @@ public class Player : MonoBehaviour {
     private Rigidbody2D rb;
     private SpriteRenderer sr;
 
+    // ANIMATIONS
+    private Animator anim;
+    [SerializeField] private SpriteRenderer headSprite;
+
     // STATE
     [HideInInspector] public State state;
 
@@ -73,6 +78,7 @@ public class Player : MonoBehaviour {
     void Update() {
         horizontalInput = Input.GetAxis("Horizontal");
         isGrounded = CheckGround();
+        anim.SetInteger("State", (int)state);
 
         switch (state) {
             case State.Idle:
@@ -146,8 +152,11 @@ public class Player : MonoBehaviour {
             case State.Charging:
                 attackChargeValue = Mathf.Clamp(attackChargeValue += Time.deltaTime, 0.0f, maxChargeTime);
                 UpdateAttackIndicator(CalcRange(attackChargeValue / maxChargeTime), isFacingRight);
+                headSprite.color = new Color(1, 0.9f - Mathf.Clamp(attackChargeValue/5.0f, 0, 0.3f), 0.9f - Mathf.Clamp(attackChargeValue / 5.0f, 0, 0.3f));
 
                 if (Input.GetKeyUp(KeyCode.Space)) {
+                    headSprite.color = new Color(1, 1, 1);
+                    attackAnimCounter = attackAnimTime;
                     Attack(CalcRange(attackChargeValue/maxChargeTime), CalcDamage(attackChargeValue/maxChargeTime), CalcKnockback(attackChargeValue/maxChargeTime), isFacingRight);
                     state = State.Attacking;
                     attackChargeValue = 0;
@@ -155,7 +164,9 @@ public class Player : MonoBehaviour {
                 }
                 break;
             case State.Attacking:
-                if (attackFinished) {
+                attackAnimCounter -= Time.deltaTime;
+
+                if (attackAnimCounter <= 0) {
                     if (horizontalInput == 0)
                         state = State.Idle;
                     else if (horizontalInput != 0)
@@ -179,6 +190,8 @@ public class Player : MonoBehaviour {
         bc = GetComponent<BoxCollider2D>();
         rb = GetComponent<Rigidbody2D>();
         sr = GetComponent<SpriteRenderer>();
+        headSprite = transform.Find("Head").GetComponent<SpriteRenderer>();
+        anim = GetComponent<Animator>();
     }
 
     void InitPlayerUI() {
@@ -199,7 +212,7 @@ public class Player : MonoBehaviour {
         currentSpirit = 0;
         spiritLevel = 1;
         attackChargeValue = 0;
-        attackFinished = true;
+        attackAnimCounter = 0;
     }
 
     // MOVEMENT HELPER FUNCTIONS

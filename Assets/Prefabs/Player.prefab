@@ -345,8 +345,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1742980675}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0, y: 1.33, z: 0}
-  m_LocalScale: {x: 1.0028679, y: 1.5043017, z: 1}
+  m_LocalPosition: {x: 0.02, y: 0.92, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 8472632743777149125}
   m_RootOrder: 0
@@ -424,7 +424,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3711274671712058303}
   m_LocalRotation: {x: 0, y: 0, z: 0.60876137, w: 0.7933534}
-  m_LocalPosition: {x: 0.83, y: -0.64, z: 0}
+  m_LocalPosition: {x: 0.7, y: -0.65, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 1742980677}
@@ -589,12 +589,14 @@ MonoBehaviour:
   damage: 1
   knockbackPower: 3
   maxChargeTime: 5
+  attackAnimTime: 0.25
   attackIndicator: {fileID: 5460108252914780515, guid: 92d2b0f380b63404a90d01f6078829b7,
     type: 3}
   maxHealth: 5
   hurtTime: 0.3
   selfKnockbackPower: 3
   spiritLevelReqs: 2d00000064000000aa000000fa00000090010000
+  headSprite: {fileID: 0}
   state: 0
 --- !u!95 &2678585540980760087
 Animator:

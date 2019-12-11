@@ -37,6 +37,7 @@ public class Player : MonoBehaviour {
     private float attackAnimCounter;
     private GameObject iAttackIndicator;
     private bool maxIndicatorRangeReached;
+    private bool attackPending;
 
     // HEALTH
     [Header("Health")]
@@ -157,14 +158,22 @@ public class Player : MonoBehaviour {
                 if (Input.GetKeyUp(KeyCode.Space)) {
                     headSprite.color = new Color(1, 1, 1);
                     attackAnimCounter = attackAnimTime;
-                    Attack(CalcRange(attackChargeValue/maxChargeTime), CalcDamage(attackChargeValue/maxChargeTime), CalcKnockback(attackChargeValue/maxChargeTime), isFacingRight);
+                    attackPending = true;
+                    
                     state = State.Attacking;
-                    attackChargeValue = 0;
-                    Destroy(iAttackIndicator);
+
                 }
                 break;
             case State.Attacking:
                 attackAnimCounter -= Time.deltaTime;
+
+                if (attackAnimCounter <= attackAnimTime - 0.03f && attackPending == true) {
+                    Attack(CalcRange(attackChargeValue / maxChargeTime), CalcDamage(attackChargeValue / maxChargeTime), CalcKnockback(attackChargeValue / maxChargeTime), isFacingRight);
+                    Debug.Log("Attacking");
+                    attackPending = false;
+                    attackChargeValue = 0;
+                    Destroy(iAttackIndicator);
+                }
 
                 if (attackAnimCounter <= 0) {
                     if (horizontalInput == 0)

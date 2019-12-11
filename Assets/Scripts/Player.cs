@@ -208,7 +208,7 @@ public class Player : MonoBehaviour {
     void ProcessMovementInput() {
         if ((isFacingRight == true && horizontalInput < 0) || (isFacingRight == false && horizontalInput > 0)) {
             attackPos.localPosition = new Vector3(-attackPos.localPosition.x, attackPos.localPosition.y, attackPos.localPosition.z);
-            isFacingRight = !isFacingRight;
+            SwitchDirection();
         }
 
         if (horizontalInput != 0) {
@@ -216,6 +216,15 @@ public class Player : MonoBehaviour {
             if (hit.collider == null)
                 transform.Translate(new Vector3(horizontalInput * moveSpeed * Time.deltaTime, 0, 0));
         }
+    }
+
+    void SwitchDirection() {
+        isFacingRight = !isFacingRight;
+
+        if (isFacingRight)
+            transform.localScale = new Vector3(1, 1, 1);
+        else
+            transform.localScale = new Vector3(-1, 1, 1);
     }
 
     // JUMPING AND GROUNDED HELPER FUNCTIONS

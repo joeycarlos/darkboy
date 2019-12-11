@@ -25,7 +25,6 @@ public class Player : MonoBehaviour {
 
     // ATTACKING
     [Header("Attacking")]
-    [SerializeField] private Transform attackPos;
     [SerializeField] private Vector3 attackBoxSize;
     [SerializeField] private float impactBoxUnitWidth;
     [SerializeField] private float impactBoxSizeHeight;
@@ -207,7 +206,6 @@ public class Player : MonoBehaviour {
 
     void ProcessMovementInput() {
         if ((isFacingRight == true && horizontalInput < 0) || (isFacingRight == false && horizontalInput > 0)) {
-            attackPos.localPosition = new Vector3(-attackPos.localPosition.x, attackPos.localPosition.y, attackPos.localPosition.z);
             SwitchDirection();
         }
 
@@ -405,12 +403,11 @@ public class Player : MonoBehaviour {
             Vector2 boxSpawnStartLocation = new Vector2(transform.position.x, transform.position.y - bc.bounds.extents.y);
             Vector3 boxCenterLocation = new Vector3(boxSpawnStartLocation.x + horizontalDistance / 2, boxSpawnStartLocation.y + impactBoxSizeHeight / 2, 0);
             Vector2 boxDimensions = new Vector2(horizontalDistance, impactBoxSizeHeight);
-            // Gizmos.DrawWireCube(boxCenterLocation, boxDimensions);
             enemiesToDamage = Physics2D.OverlapBoxAll(boxCenterLocation, boxDimensions, 0, LayerMask.GetMask("Enemy"));
         }
         else {
             int numRaycasts = 30;
-            float horizontalDistance = 10.0f; // will be calculated based off of charge and level
+            float horizontalDistance = range; // will be calculated based off of charge and level
             float distBetweenRaycasts = horizontalDistance / (float)numRaycasts;
 
             for (int i = 0; i < numRaycasts; i++) {
@@ -424,7 +421,6 @@ public class Player : MonoBehaviour {
             Vector2 boxSpawnStartLocation = new Vector2(transform.position.x, transform.position.y - bc.bounds.extents.y);
             Vector3 boxCenterLocation = new Vector3(boxSpawnStartLocation.x - horizontalDistance / 2, boxSpawnStartLocation.y + impactBoxSizeHeight / 2, 0);
             Vector2 boxDimensions = new Vector2(horizontalDistance, impactBoxSizeHeight);
-            // Gizmos.DrawWireCube(boxCenterLocation, boxDimensions);
             enemiesToDamage = Physics2D.OverlapBoxAll(boxCenterLocation, boxDimensions, 0, LayerMask.GetMask("Enemy"));
         }
 
@@ -432,8 +428,6 @@ public class Player : MonoBehaviour {
             Enemy enemy = enemiesToDamage[i].GetComponent<Enemy>();
             if (enemy.state != Enemy.State.Hurt) {
                 enemy.EnterHurtState(damage, knockback, enemy.transform.position.x - transform.position.x);
-                // enemiesToDamage[i].GetComponent<Enemy>().TakeDamage(damage);
-                // enemiesToDamage[i].GetComponent<Enemy>().Knockback(knockback, isFacingRight);
             }
         }
 
@@ -455,7 +449,6 @@ public class Player : MonoBehaviour {
 
     private void OnDrawGizmosSelected() {
         Gizmos.color = Color.red;
-        // Gizmos.DrawWireCube(attackPos.position, new Vector3(attackBoxSize.x, attackBoxSize.y, attackBoxSize.z));
 
         if (bc != null) {
             if (isFacingRight) {
@@ -507,17 +500,3 @@ public class Player : MonoBehaviour {
         }
     }
 }
-    /*
-
-    void ProcessAttackInput() {
-        if (Input.GetKeyDown(KeyCode.Space)) {
-            Collider2D[] enemiesToDamage = Physics2D.OverlapCircleAll(attackPos.position, attackRange, LayerMask.GetMask("Enemy"));
-            for (int i = 0; i < enemiesToDamage.Length; i++) {
-                if (enemiesToDamage[i].GetComponent<Enemy>().knockbackState == false) {
-                    enemiesToDamage[i].GetComponent<Enemy>().TakeDamage(damage);
-                    enemiesToDamage[i].GetComponent<Enemy>().Knockback(knockbackPower, isFacingRight);
-                }
-            }
-        }
-    }
-*/

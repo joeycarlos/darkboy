@@ -53,7 +53,9 @@ public class Player : MonoBehaviour {
     [Header("Hurt State")]
     [SerializeField] private float hurtTime = 0.3f;
     [SerializeField] private float selfKnockbackPower = 3.0f;
+    [SerializeField] private float hurtAlphaFlashTime = 0.05f;
     private float hurtTimeCounter;
+    private float hurtFlashCounter;
 
     // SPIRIT
     [Header("Spirit")]
@@ -66,6 +68,7 @@ public class Player : MonoBehaviour {
     private Rigidbody2D rb;
     private SpriteRenderer sr;
     private GameObject attackPos;
+    private SpriteRenderer[] spriteComponents;
 
     // ANIMATIONS
     private Animator anim;
@@ -209,6 +212,7 @@ public class Player : MonoBehaviour {
         headSprite = transform.Find("Head").GetComponent<SpriteRenderer>();
         anim = GetComponent<Animator>();
         attackPos = transform.Find("AttackPos").gameObject;
+        spriteComponents = GetComponentsInChildren<SpriteRenderer>();
     }
 
     void InitPlayerUI() {
@@ -301,12 +305,36 @@ public class Player : MonoBehaviour {
         state = State.Hurt;
         TakeDamage(damage);
         Knockback(isRightDirection);
-        sr.color = Color.red;
         hurtTimeCounter = hurtTime;
+        StartCoroutine(HurtAlphaFlash(hurtTime, hurtAlphaFlashTime));
+    }
+
+    IEnumerator HurtAlphaFlash(float hurtTime, float hurtAlphaFlashTime) {
+        float hurtTimeCounter = hurtTime;
+        bool pendingAlpha = true;
+        Color pendingColor;
+
+        while (hurtTimeCounter > 0) {
+            foreach (SpriteRenderer sr in spriteComponents) {
+                if (pendingAlpha) {
+                    pendingColor = new Color(1, 1, 1, 0.3f);
+                } else {
+                    pendingColor = new Color(1, 1, 1, 1);
+                }
+
+                sr.color = pendingColor;
+            }
+            pendingAlpha = !pendingAlpha;
+            hurtTimeCounter -= hurtAlphaFlashTime;
+
+            yield return new WaitForSeconds(hurtAlphaFlashTime);
+        }
     }
 
     public void ExitHurtState() {
-        sr.color = Color.white;
+        foreach (SpriteRenderer sr in spriteComponents) {
+            sr.color = new Color(1, 1, 1, 1);
+        }
     }
 
     public void TakeDamage(int damage) {

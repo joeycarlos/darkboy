@@ -18,15 +18,19 @@ public class CameraController : MonoBehaviour
     }
 
     [SerializeField] private GameObject player;
-    [SerializeField] private float horizontalOffset = 0f;
-    [SerializeField] private float verticalOffset = 0f;
+
+    private Shaker s;
 
     void Awake() {
         _instance = this;
     }
 
+    private void Start() {
+        s = GetComponent<Shaker>();
+    }
+
     void LateUpdate() {
-        if (player != null)
-            transform.position = new Vector3(player.transform.position.x + horizontalOffset, verticalOffset, -10.0f);
+        if (player != null && s._isShaking == false)
+            transform.position = new Vector3(player.transform.position.x, 0, -10.0f);
     }
 }

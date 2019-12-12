@@ -471,6 +471,8 @@ public class Player : MonoBehaviour {
             }
         }
 
+        CameraController.Instance.gameObject.GetComponent<Shaker>().Shake(0.3f, CameraController.Instance.transform.position);
+
     }
 
     private float CalcRange(float attackChargeValue) {

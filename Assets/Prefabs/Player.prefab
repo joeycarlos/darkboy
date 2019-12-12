@@ -104,7 +104,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1035685591}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -0.07954979, y: -0.40324306, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
@@ -591,6 +591,10 @@ MonoBehaviour:
   maxChargeTime: 5
   attackAnimTime: 0.25
   attackIndicator: {fileID: 5460108252914780515, guid: 92d2b0f380b63404a90d01f6078829b7,
+    type: 3}
+  chargingParticleEffect: {fileID: 6168602096577404322, guid: 09080b3bc46a11c4586855fe50e35e37,
+    type: 3}
+  impactParticleEffect: {fileID: 1896886987970442325, guid: 7641e0c96d78b8b42ace383820addc4d,
     type: 3}
   maxHealth: 5
   hurtTime: 0.3

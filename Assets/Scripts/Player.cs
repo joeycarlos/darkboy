@@ -41,6 +41,8 @@ public class Player : MonoBehaviour {
 
     [SerializeField] private GameObject chargingParticleEffect;
     private GameObject iChargingParticleEffect;
+    [SerializeField] private GameObject impactParticleEffect;
+    private GameObject iImpactParticleEffect;
 
     // HEALTH
     [Header("Health")]
@@ -157,7 +159,7 @@ public class Player : MonoBehaviour {
             // FIX STATES BELOW
             case State.Charging:
                 attackChargeValue = Mathf.Clamp(attackChargeValue += Time.deltaTime, 0.0f, maxChargeTime);
-                UpdateAttackIndicator(CalcRange(attackChargeValue / maxChargeTime), isFacingRight);
+                // UpdateAttackIndicator(CalcRange(attackChargeValue / maxChargeTime), isFacingRight);
                 headSprite.color = new Color(1, 0.9f - Mathf.Clamp(attackChargeValue/5.0f, 0, 0.3f), 0.9f - Mathf.Clamp(attackChargeValue / 5.0f, 0, 0.3f));
 
                 if (Input.GetKeyUp(KeyCode.Space)) {
@@ -434,6 +436,10 @@ public class Player : MonoBehaviour {
             Vector3 boxCenterLocation = new Vector3(boxSpawnStartLocation.x + horizontalDistance / 2, boxSpawnStartLocation.y + impactBoxSizeHeight / 2, 0);
             Vector2 boxDimensions = new Vector2(horizontalDistance, impactBoxSizeHeight);
             enemiesToDamage = Physics2D.OverlapBoxAll(boxCenterLocation, boxDimensions, 0, LayerMask.GetMask("Enemy"));
+
+            SpawnImpactParticles(boxCenterLocation, boxDimensions);
+
+            
         }
         else {
             int numRaycasts = 30;
@@ -452,6 +458,8 @@ public class Player : MonoBehaviour {
             Vector3 boxCenterLocation = new Vector3(boxSpawnStartLocation.x - horizontalDistance / 2, boxSpawnStartLocation.y + impactBoxSizeHeight / 2, 0);
             Vector2 boxDimensions = new Vector2(horizontalDistance, impactBoxSizeHeight);
             enemiesToDamage = Physics2D.OverlapBoxAll(boxCenterLocation, boxDimensions, 0, LayerMask.GetMask("Enemy"));
+
+            SpawnImpactParticles(boxCenterLocation, boxDimensions);
         }
 
         for (int i = 0; i < enemiesToDamage.Length; i++) {
@@ -475,7 +483,12 @@ public class Player : MonoBehaviour {
         return 3 + (0.5f * attackChargeValue + (spiritLevel - 1) * 0.125f) * 5.0f;
     }
 
-
+    private void SpawnImpactParticles(Vector3 position, Vector2 dimensions) {
+        iImpactParticleEffect = Instantiate(impactParticleEffect, position, Quaternion.identity);
+        ParticleSystem.ShapeModule ps = iImpactParticleEffect.GetComponent<ParticleSystem>().shape;
+        ps.scale = new Vector3(dimensions.x, 1, 1);
+        Destroy(iImpactParticleEffect, 1.0f);
+    }
 
     private void OnDrawGizmosSelected() {
         Gizmos.color = Color.red;

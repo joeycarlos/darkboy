@@ -310,7 +310,7 @@ public class Player : MonoBehaviour {
     }
 
     IEnumerator HurtAlphaFlash(float hurtTime, float hurtAlphaFlashTime) {
-        float hurtTimeCounter = hurtTime;
+        float hurtTimeCounter = hurtTime - 0.05f; // to ensure flashing is shorter than actual hurt state
         bool pendingAlpha = true;
         Color pendingColor;
 

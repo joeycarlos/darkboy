@@ -49,13 +49,17 @@ public class Player : MonoBehaviour {
     public int maxHealth = 5;
     private int currentHealth;
 
-    // HURT STATE
-    [Header("Hurt State")]
-    [SerializeField] private float hurtTime = 0.3f;
+    // KNOCKBACK STATE
+    [Header("Knockback State")]
+    [SerializeField] private float knockbackTime = 0.3f;
     [SerializeField] private float selfKnockbackPower = 3.0f;
-    [SerializeField] private float hurtAlphaFlashTime = 0.05f;
-    private float hurtTimeCounter;
-    private float hurtFlashCounter;
+    private float knockbackTimeCounter;
+
+    // RECOVERY STATUS
+    [Header("Recovery Status")]
+    [SerializeField] private float recoveryTime = 1.5f;
+    [SerializeField] private float recoveryAlphaFlashTime = 0.05f;
+    [HideInInspector] public bool isRecovering;
 
     // SPIRIT
     [Header("Spirit")]
@@ -77,7 +81,7 @@ public class Player : MonoBehaviour {
     // STATE
     [HideInInspector] public State state;
 
-    public enum State { Idle, Running, Jumping, Falling, Charging, Attacking, Hurt, Death, Pause };
+    public enum State { Idle, Running, Jumping, Falling, Charging, Attacking, Knockback, Death, Pause };
 
     void Start() {
         LinkComponents();
@@ -143,11 +147,11 @@ public class Player : MonoBehaviour {
                 else if (horizontalInput == 0 && isGrounded == true)
                     state = State.Idle;
                 break;
-            case State.Hurt:
-                hurtTimeCounter = hurtTimeCounter - Time.deltaTime;
+            case State.Knockback:
+                knockbackTimeCounter = knockbackTimeCounter - Time.deltaTime;
                 isGroundedRememberCounter -= Time.deltaTime;
 
-                if (hurtTimeCounter <= 0) {
+                if (knockbackTimeCounter <= 0) {
                     if (Input.GetKeyDown(KeyCode.UpArrow) && (isGrounded == true || isGroundedRememberCounter >= 0) && !hasJumped)
                         state = State.Jumping;
                     else if (horizontalInput != 0 && isGrounded == true)
@@ -156,8 +160,6 @@ public class Player : MonoBehaviour {
                         state = State.Idle;
                     else if (isGrounded == false)
                         state = State.Falling;
-
-                    ExitHurtState();
                 }
                 break;
             // FIX STATES BELOW
@@ -234,6 +236,7 @@ public class Player : MonoBehaviour {
         spiritLevel = 1;
         attackChargeValue = 0;
         attackAnimCounter = 0;
+        isRecovering = false;
     }
 
     // MOVEMENT HELPER FUNCTIONS
@@ -294,27 +297,35 @@ public class Player : MonoBehaviour {
             return false;
     }
 
-    // HURT STATE HELPER FUNCTIONS
+    // KNOCKBACK STATE HELPER FUNCTIONS
 
     public bool isHittable() {
-        if (state == State.Hurt) return false;
+        if (isRecovering == true) return false;
         else return true;
     }
 
-    public void EnterHurtState(int damage, bool isRightDirection) {
-        state = State.Hurt;
+    public void EnterKnockbackState(int damage, bool isRightDirection) {
+        state = State.Knockback;
+        
         TakeDamage(damage);
         Knockback(isRightDirection);
-        hurtTimeCounter = hurtTime;
-        StartCoroutine(HurtAlphaFlash(hurtTime, hurtAlphaFlashTime));
+        knockbackTimeCounter = knockbackTime;
+        StartCoroutine(RecoveryAlphaFlash(recoveryTime, recoveryAlphaFlashTime));
+        StartCoroutine(RecoveryStatus(recoveryTime));
     }
 
-    IEnumerator HurtAlphaFlash(float hurtTime, float hurtAlphaFlashTime) {
-        float hurtTimeCounter = hurtTime - 0.05f; // to ensure flashing is shorter than actual hurt state
+    IEnumerator RecoveryStatus(float recoveryTime) {
+        isRecovering = true;
+        yield return new WaitForSeconds(recoveryTime);
+        isRecovering = false;
+    }
+
+    IEnumerator RecoveryAlphaFlash(float recoveryTime, float recoveryAlphaFlashTime) {
+        float recoveryTimeCounter = recoveryTime - 0.05f; // to ensure flashing is shorter than actual hurt state
         bool pendingAlpha = true;
         Color pendingColor;
 
-        while (hurtTimeCounter > 0) {
+        while (recoveryTimeCounter > 0) {
             foreach (SpriteRenderer sr in spriteComponents) {
                 if (pendingAlpha) {
                     pendingColor = new Color(1, 1, 1, 0.3f);
@@ -325,13 +336,13 @@ public class Player : MonoBehaviour {
                 sr.color = pendingColor;
             }
             pendingAlpha = !pendingAlpha;
-            hurtTimeCounter -= hurtAlphaFlashTime;
+            recoveryTimeCounter -= recoveryAlphaFlashTime;
 
-            yield return new WaitForSeconds(hurtAlphaFlashTime);
+            yield return new WaitForSeconds(recoveryAlphaFlashTime);
         }
     }
 
-    public void ExitHurtState() {
+    public void DisableRecoveryStatus() {
         foreach (SpriteRenderer sr in spriteComponents) {
             sr.color = new Color(1, 1, 1, 1);
         }

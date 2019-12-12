@@ -628,9 +628,11 @@ MonoBehaviour:
   impactParticleEffect: {fileID: 1896886987970442325, guid: 7641e0c96d78b8b42ace383820addc4d,
     type: 3}
   maxHealth: 5
-  hurtTime: 1.5
-  selfKnockbackPower: 5
-  hurtAlphaFlashTime: 0.05
+  knockbackTime: 0.3
+  selfKnockbackPower: 10
+  recoveryTime: 1.5
+  recoveryAlphaFlashTime: 0.05
+  isRecovering: 0
   spiritLevelReqs: 2d00000064000000aa000000fa00000090010000
   headSprite: {fileID: 0}
   state: 0

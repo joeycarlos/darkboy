@@ -11,9 +11,9 @@ public class DamageTrigger : MonoBehaviour {
             Player p = col.gameObject.GetComponent<Player>();
             if (p.isHittable()) {
                 if (transform.position.x < p.transform.position.x)
-                    p.EnterHurtState(damage, true);
+                    p.EnterKnockbackState(damage, true);
                 else if (transform.position.x > p.transform.position.x)
-                    p.EnterHurtState(damage, false);
+                    p.EnterKnockbackState(damage, false);
             }
         }
     }

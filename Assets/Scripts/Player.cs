@@ -39,6 +39,9 @@ public class Player : MonoBehaviour {
     private bool maxIndicatorRangeReached;
     private bool attackPending;
 
+    [SerializeField] private GameObject chargingParticleEffect;
+    private GameObject iChargingParticleEffect;
+
     // HEALTH
     [Header("Health")]
     public int maxHealth = 5;
@@ -84,6 +87,7 @@ public class Player : MonoBehaviour {
         switch (state) {
             case State.Idle:
                 if (Input.GetKeyDown(KeyCode.Space) && isGrounded == true) {
+                    EnterChargingState();
                     state = State.Charging;
                 }
                 else if (Input.GetKeyDown(KeyCode.UpArrow) && (isGrounded == true || isGroundedRememberCounter >= 0) && !hasJumped) {
@@ -97,6 +101,7 @@ public class Player : MonoBehaviour {
                 ProcessMovementInput();
 
                 if (Input.GetKeyDown(KeyCode.Space) && isGrounded == true) {
+                    EnterChargingState();
                     state = State.Charging;
                 }
                 else if (Input.GetKeyDown(KeyCode.UpArrow) && (isGrounded == true || isGroundedRememberCounter >= 0) && !hasJumped) {
@@ -161,7 +166,7 @@ public class Player : MonoBehaviour {
                     attackPending = true;
                     
                     state = State.Attacking;
-
+                    Destroy(iChargingParticleEffect);
                 }
                 break;
             case State.Attacking:
@@ -169,7 +174,6 @@ public class Player : MonoBehaviour {
 
                 if (attackAnimCounter <= attackAnimTime - 0.03f && attackPending == true) {
                     Attack(CalcRange(attackChargeValue / maxChargeTime), CalcDamage(attackChargeValue / maxChargeTime), CalcKnockback(attackChargeValue / maxChargeTime), isFacingRight);
-                    Debug.Log("Attacking");
                     attackPending = false;
                     attackChargeValue = 0;
                     Destroy(iAttackIndicator);
@@ -355,6 +359,10 @@ public class Player : MonoBehaviour {
     }
 
     // ATTACKING
+
+    private void EnterChargingState() {
+        iChargingParticleEffect = Instantiate(chargingParticleEffect, transform.position, Quaternion.identity);
+    }
 
     private void UpdateAttackIndicator(float range, bool isFacingRight) {
         if (iAttackIndicator == null) {

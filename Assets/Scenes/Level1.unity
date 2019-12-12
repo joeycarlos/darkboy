@@ -236,7 +236,7 @@ TilemapRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: -1
   m_ChunkSize: {x: 32, y: 32, z: 32}
   m_ChunkCullingBounds: {x: 0, y: 0, z: 0}
   m_MaxChunkCount: 16
@@ -2184,6 +2184,16 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 9163946664115101515, guid: 5c95161e68211bc498128cfeca229443,
+        type: 3}
+      propertyPath: chargingParticleEffect
+      value: 
+      objectReference: {fileID: 6168602096577404322, guid: 09080b3bc46a11c4586855fe50e35e37,
+        type: 3}
+    - target: {fileID: 73983950, guid: 5c95161e68211bc498128cfeca229443, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.49
+      objectReference: {fileID: 0}
     - target: {fileID: 1035685593, guid: 5c95161e68211bc498128cfeca229443, type: 3}
       propertyPath: m_LocalRotation.x
       value: 0
@@ -2203,6 +2213,26 @@ PrefabInstance:
     - target: {fileID: 1035685593, guid: 5c95161e68211bc498128cfeca229443, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1035685593, guid: 5c95161e68211bc498128cfeca229443, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1191464277, guid: 5c95161e68211bc498128cfeca229443, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0.39
+      objectReference: {fileID: 0}
+    - target: {fileID: 1191464277, guid: 5c95161e68211bc498128cfeca229443, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -1.0285127
+      objectReference: {fileID: 0}
+    - target: {fileID: 1663683818, guid: 5c95161e68211bc498128cfeca229443, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -0.33
+      objectReference: {fileID: 0}
+    - target: {fileID: 1663683818, guid: 5c95161e68211bc498128cfeca229443, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -1.0424446
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 5c95161e68211bc498128cfeca229443, type: 3}

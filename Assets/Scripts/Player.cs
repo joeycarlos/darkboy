@@ -65,6 +65,7 @@ public class Player : MonoBehaviour {
     private BoxCollider2D bc;
     private Rigidbody2D rb;
     private SpriteRenderer sr;
+    private GameObject attackPos;
 
     // ANIMATIONS
     private Animator anim;
@@ -174,7 +175,7 @@ public class Player : MonoBehaviour {
             case State.Attacking:
                 attackAnimCounter -= Time.deltaTime;
 
-                if (attackAnimCounter <= attackAnimTime - 0.03f && attackPending == true) {
+                if (attackAnimCounter <= attackAnimTime - 0.05f && attackPending == true) {
                     Attack(CalcRange(attackChargeValue / maxChargeTime), CalcDamage(attackChargeValue / maxChargeTime), CalcKnockback(attackChargeValue / maxChargeTime), isFacingRight);
                     attackPending = false;
                     attackChargeValue = 0;
@@ -207,6 +208,7 @@ public class Player : MonoBehaviour {
         sr = GetComponent<SpriteRenderer>();
         headSprite = transform.Find("Head").GetComponent<SpriteRenderer>();
         anim = GetComponent<Animator>();
+        attackPos = transform.Find("AttackPos").gameObject;
     }
 
     void InitPlayerUI() {
@@ -425,14 +427,14 @@ public class Player : MonoBehaviour {
             float distBetweenRaycasts = horizontalDistance / (float)numRaycasts;
 
             for (int i = 0; i < numRaycasts; i++) {
-                RaycastHit2D hit = Physics2D.Raycast(new Vector2(transform.position.x + i * distBetweenRaycasts, transform.position.y), -Vector2.up, bc.bounds.extents.y + 0.1f, LayerMask.GetMask("Platform"));
+                RaycastHit2D hit = Physics2D.Raycast(new Vector2(attackPos.transform.position.x + i * distBetweenRaycasts, transform.position.y), -Vector2.up, bc.bounds.extents.y + 0.1f, LayerMask.GetMask("Platform"));
                 if (hit.collider == null) {
                     horizontalDistance = Mathf.Clamp(horizontalDistance, 0, (i - 1) * distBetweenRaycasts);
                     break;
                 }
             }
 
-            Vector2 boxSpawnStartLocation = new Vector2(transform.position.x, transform.position.y - bc.bounds.extents.y);
+            Vector2 boxSpawnStartLocation = new Vector2(attackPos.transform.position.x, transform.position.y - bc.bounds.extents.y);
             Vector3 boxCenterLocation = new Vector3(boxSpawnStartLocation.x + horizontalDistance / 2, boxSpawnStartLocation.y + impactBoxSizeHeight / 2, 0);
             Vector2 boxDimensions = new Vector2(horizontalDistance, impactBoxSizeHeight);
             enemiesToDamage = Physics2D.OverlapBoxAll(boxCenterLocation, boxDimensions, 0, LayerMask.GetMask("Enemy"));
@@ -447,14 +449,14 @@ public class Player : MonoBehaviour {
             float distBetweenRaycasts = horizontalDistance / (float)numRaycasts;
 
             for (int i = 0; i < numRaycasts; i++) {
-                RaycastHit2D hit = Physics2D.Raycast(new Vector2(transform.position.x - i * distBetweenRaycasts, transform.position.y), -Vector2.up, bc.bounds.extents.y + 0.1f, LayerMask.GetMask("Platform"));
+                RaycastHit2D hit = Physics2D.Raycast(new Vector2(attackPos.transform.position.x - i * distBetweenRaycasts, transform.position.y), -Vector2.up, bc.bounds.extents.y + 0.1f, LayerMask.GetMask("Platform"));
                 if (hit.collider == null) {
                     horizontalDistance = Mathf.Clamp(horizontalDistance, 0, (i - 1) * distBetweenRaycasts);
                     break;
                 }
             }
 
-            Vector2 boxSpawnStartLocation = new Vector2(transform.position.x, transform.position.y - bc.bounds.extents.y);
+            Vector2 boxSpawnStartLocation = new Vector2(attackPos.transform.position.x, transform.position.y - bc.bounds.extents.y);
             Vector3 boxCenterLocation = new Vector3(boxSpawnStartLocation.x - horizontalDistance / 2, boxSpawnStartLocation.y + impactBoxSizeHeight / 2, 0);
             Vector2 boxDimensions = new Vector2(horizontalDistance, impactBoxSizeHeight);
             enemiesToDamage = Physics2D.OverlapBoxAll(boxCenterLocation, boxDimensions, 0, LayerMask.GetMask("Enemy"));

@@ -366,9 +366,9 @@ public class Player : MonoBehaviour {
 
         Vector2 knockbackVector;
         if (isRightDirection) {
-            knockbackVector = new Vector2(selfKnockbackPower, knockbackPower + 2.0f);
+            knockbackVector = new Vector2(selfKnockbackPower, selfKnockbackPower);
         } else {
-            knockbackVector = new Vector2(-selfKnockbackPower, knockbackPower + 2.0f);
+            knockbackVector = new Vector2(-selfKnockbackPower, selfKnockbackPower);
         }
         rb.AddForce(knockbackVector, ForceMode2D.Impulse);
     }

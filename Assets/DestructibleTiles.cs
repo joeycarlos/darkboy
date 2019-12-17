@@ -31,8 +31,6 @@ public class DestructibleTiles : MonoBehaviour
         foreach (Vector3Int position in bounds.allPositionsWithin) {
             TileBase t = tm.GetTile(position);
             tm.SetTile(position, null);
-            // Debug.Log(position);
-            // Debug.Log("Deleting");
         }
 
     }

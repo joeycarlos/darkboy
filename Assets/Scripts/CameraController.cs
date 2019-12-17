@@ -31,6 +31,6 @@ public class CameraController : MonoBehaviour
 
     void LateUpdate() {
         if (player != null && s._isShaking == false)
-            transform.position = new Vector3(player.transform.position.x, 0, -10.0f);
+            transform.position = new Vector3(player.transform.position.x, player.transform.position.y, -10.0f);
     }
 }

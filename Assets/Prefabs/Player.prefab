@@ -611,7 +611,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   moveSpeed: 6
-  jumpForce: 7
+  jumpForce: 13
   maxJumpTime: 0.25
   isGroundedRememberTime: 0.15
   attackBoxSize: {x: 1, y: 1.5, z: 0}

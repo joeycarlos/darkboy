@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Tilemaps;
 
 public class Player : MonoBehaviour {
     // MOVEMENT
@@ -73,6 +74,7 @@ public class Player : MonoBehaviour {
     private SpriteRenderer sr;
     private GameObject attackPos;
     private SpriteRenderer[] spriteComponents;
+    private DestructibleTiles destructibleTiles;
 
     // ANIMATIONS
     private Animator anim;
@@ -215,6 +217,15 @@ public class Player : MonoBehaviour {
         anim = GetComponent<Animator>();
         attackPos = transform.Find("AttackPos").gameObject;
         spriteComponents = GetComponentsInChildren<SpriteRenderer>();
+
+        // Find the destructible tilemap
+        Tilemap[] tilemapsList;
+        tilemapsList = FindObjectsOfType<Tilemap>();
+        foreach (Tilemap tm in tilemapsList) {
+            if (tm.tag == "Destructible") {
+                destructibleTiles = tm.GetComponent<DestructibleTiles>();
+            }
+        }
     }
 
     void InitPlayerUI() {
@@ -477,6 +488,9 @@ public class Player : MonoBehaviour {
             Vector3 boxCenterLocation = new Vector3(boxSpawnStartLocation.x + horizontalDistance / 2, boxSpawnStartLocation.y + impactBoxSizeHeight / 2, 0);
             Vector2 boxDimensions = new Vector2(horizontalDistance, impactBoxSizeHeight);
             enemiesToDamage = Physics2D.OverlapBoxAll(boxCenterLocation, boxDimensions, 0, LayerMask.GetMask("Enemy"));
+
+            // insert check and call to destroy tiles here
+            destructibleTiles.DestroyTiles(boxSpawnStartLocation, boxDimensions);
 
             SpawnImpactParticles(boxCenterLocation, boxDimensions);
 

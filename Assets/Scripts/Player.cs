@@ -491,7 +491,7 @@ public class Player : MonoBehaviour {
 
             // insert check and call to destroy tiles here
             destructibleTiles.DestroyTiles(boxSpawnStartLocation, boxDimensions);
-
+                
             SpawnImpactParticles(boxCenterLocation, boxDimensions);
 
             
@@ -513,6 +513,8 @@ public class Player : MonoBehaviour {
             Vector3 boxCenterLocation = new Vector3(boxSpawnStartLocation.x - horizontalDistance / 2, boxSpawnStartLocation.y + impactBoxSizeHeight / 2, 0);
             Vector2 boxDimensions = new Vector2(horizontalDistance, impactBoxSizeHeight);
             enemiesToDamage = Physics2D.OverlapBoxAll(boxCenterLocation, boxDimensions, 0, LayerMask.GetMask("Enemy"));
+
+            destructibleTiles.DestroyTiles(new Vector2(boxSpawnStartLocation.x - boxDimensions.x, boxSpawnStartLocation.y), boxDimensions);
 
             SpawnImpactParticles(boxCenterLocation, boxDimensions);
         }

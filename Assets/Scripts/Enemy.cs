@@ -33,7 +33,7 @@ public class Enemy : MonoBehaviour
             case State.Hurt:
                 hurtTimeCounter -= Time.deltaTime;
                 if (hurtTimeCounter <= 0) {
-                    sr.color = Color.red;
+                    sr.color = Color.white;
                     state = State.Patrol;
                 }
                 break;
@@ -124,7 +124,7 @@ public class Enemy : MonoBehaviour
         if (currentHealth <= 0) {
             Death();
         }
-        healthBar.SetSize(currentHealth / maxHealth);
+        // healthBar.SetSize(currentHealth / maxHealth);
     }
 
     public void Knockback(float knockbackPower, bool isRightDirection) {

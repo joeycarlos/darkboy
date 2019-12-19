@@ -145,8 +145,8 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: b7983bf2cc5cef0459ae37383ca3ee8d, type: 3}
-  m_Color: {r: 1, g: 0, b: 0, a: 1}
+  m_Sprite: {fileID: 21300000, guid: 71ca187120c1ec84081a6d3bc0b6e425, type: 3}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -169,18 +169,18 @@ BoxCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0, y: 0}
+  m_Offset: {x: 0, y: 0.04211235}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 1, y: 1}
+    oldSize: {x: 1, y: 0.76}
     newSize: {x: 1, y: 1}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 1, y: 1}
+  m_Size: {x: 1, y: 0.70521927}
   m_EdgeRadius: 0
 --- !u!50 &7779681007822303542
 Rigidbody2D:
@@ -218,9 +218,7 @@ MonoBehaviour:
   healthBar: {fileID: 5323186287568414875}
   maxHealth: 10
   knockbackResistance: 0
-  moveSpeed: 3
-  knockbackState: 0
-  knockbackTime: 0.5
+  moveSpeed: 7
   state: 0
 --- !u!1001 &7166473517379946261
 PrefabInstance:
@@ -233,6 +231,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: HealthBar
+      objectReference: {fileID: 0}
+    - target: {fileID: 1871336229866431402, guid: e619e82d430ddbe44848483db6d41417,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4146556189719230201, guid: e619e82d430ddbe44848483db6d41417,
         type: 3}

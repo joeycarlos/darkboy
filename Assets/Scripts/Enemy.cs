@@ -64,15 +64,42 @@ public class Enemy : MonoBehaviour
     }
 
     void CheckDirectionSwitch() {
+        bool switchPending = false;
+
         Vector3 raycastOriginOffset;
+        RaycastHit2D hit;
+
+        
+        // check if there is a wall
+
+        if (isMovingRight) {
+            raycastOriginOffset = new Vector3(bc.bounds.extents.x - 0.1f, 0, 0);
+            hit = Physics2D.Raycast(transform.position + raycastOriginOffset, Vector2.right, 0.2f, LayerMask.GetMask("Platform"));
+        }        
+        else {
+            raycastOriginOffset = new Vector3(-bc.bounds.extents.x + 0.1f, 0, 0);
+            hit = Physics2D.Raycast(transform.position + raycastOriginOffset, -Vector2.right, 0.2f, LayerMask.GetMask("Platform"));
+        }
+
+        if (hit.collider != null) {
+            switchPending = true;
+        }
+
+        // check is there is any ground at all
 
         if (isMovingRight)
-            raycastOriginOffset = new Vector3(bc.bounds.extents.x, -bc.bounds.extents.y + 0.05f, 0);
+            raycastOriginOffset = new Vector3(bc.bounds.extents.x - 0.1f, -bc.bounds.extents.y + 0.05f, 0);
         else
-            raycastOriginOffset = new Vector3(-bc.bounds.extents.x, -bc.bounds.extents.y + 0.05f, 0);
+            raycastOriginOffset = new Vector3(-bc.bounds.extents.x + 0.1f, -bc.bounds.extents.y + 0.05f, 0);
 
-        RaycastHit2D hit = Physics2D.Raycast(transform.position + raycastOriginOffset, -Vector2.up, 0.5f, LayerMask.GetMask("Platform"));
-        if (hit.collider == null) isMovingRight = !isMovingRight;
+
+
+        hit = Physics2D.Raycast(transform.position + raycastOriginOffset, -Vector2.up, 0.5f, LayerMask.GetMask("Platform"));
+        if (hit.collider == null) switchPending = true;
+
+        if (switchPending == true) {
+            isMovingRight = !isMovingRight;
+        }
     }
 
     public void EnterHurtState(float damage, float knockback, float distance) {
@@ -116,4 +143,16 @@ public class Enemy : MonoBehaviour
     void Death() {
         Destroy(gameObject);
     }
-}
+
+    private void OnDrawGizmosSelected() {
+        Vector3 raycastOriginOffset;
+
+        if (isMovingRight)
+            raycastOriginOffset = new Vector3(bc.bounds.extents.x, -bc.bounds.extents.y + 0.05f, 0);
+        else
+            raycastOriginOffset = new Vector3(-bc.bounds.extents.x, -bc.bounds.extents.y + 0.05f, 0);
+
+        Gizmos.DrawLine(transform.position + raycastOriginOffset, transform.position + raycastOriginOffset - 0.5f * Vector3.up);
+    }
+        
+    }

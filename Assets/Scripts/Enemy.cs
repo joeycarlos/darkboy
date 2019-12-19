@@ -143,16 +143,5 @@ public class Enemy : MonoBehaviour
     void Death() {
         Destroy(gameObject);
     }
-
-    private void OnDrawGizmosSelected() {
-        Vector3 raycastOriginOffset;
-
-        if (isMovingRight)
-            raycastOriginOffset = new Vector3(bc.bounds.extents.x, -bc.bounds.extents.y + 0.05f, 0);
-        else
-            raycastOriginOffset = new Vector3(-bc.bounds.extents.x, -bc.bounds.extents.y + 0.05f, 0);
-
-        Gizmos.DrawLine(transform.position + raycastOriginOffset, transform.position + raycastOriginOffset - 0.5f * Vector3.up);
-    }
         
-    }
+}

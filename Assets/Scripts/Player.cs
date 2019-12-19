@@ -230,10 +230,12 @@ public class Player : MonoBehaviour {
 
     void InitPlayerUI() {
         GameplayUI.Instance.GenerateHealthUI(maxHealth);
+        /*
         GameplayUI.Instance.UpdateSpiritLevelValue(spiritLevel);
         GameplayUI.Instance.spiritBarMin = 0;
         GameplayUI.Instance.spiritBarMax = spiritLevelReqs[spiritLevel - 1];
         GameplayUI.Instance.SetSpirit(currentSpirit);
+        */
     }
 
     void InitPlayerVars() {
@@ -388,22 +390,9 @@ public class Player : MonoBehaviour {
         Destroy(gameObject);
     }
 
-    // SPIRIT AND HEALTH HELPER FUNCTIONS
+    // HEALTH HELPER FUNCTIONS
 
-    void AddSpirit(int value) {
-        if (currentSpirit + value >= spiritLevelReqs[spiritLevel - 1]) {
-            currentSpirit = currentSpirit + value - spiritLevelReqs[spiritLevel - 1];
-            LevelUp();
-        } else {
-            currentSpirit += value;
-        }
-        GameplayUI.Instance.SetSpirit(currentSpirit);
-    }
 
-    void LevelUp() {
-        spiritLevel++;
-        GameplayUI.Instance.UpdateSpiritLevelValue(spiritLevel);
-    }
 
     public void AddHealth(int value) {
         int originalHealth = currentHealth;
@@ -597,8 +586,25 @@ public class Player : MonoBehaviour {
     private void OnTriggerEnter2D(Collider2D col) {
         if (col.gameObject.layer == LayerMask.NameToLayer("Pickup")) {
             Pickup p = col.gameObject.GetComponent<Pickup>();
-            AddSpirit(p.spiritValue);
+            // AddSpirit(p.spiritValue);
             Destroy(p.gameObject);
         }
     }
 }
+
+/*
+void AddSpirit(int value) {
+if (currentSpirit + value >= spiritLevelReqs[spiritLevel - 1]) {
+    currentSpirit = currentSpirit + value - spiritLevelReqs[spiritLevel - 1];
+    LevelUp();
+} else {
+    currentSpirit += value;
+}
+GameplayUI.Instance.SetSpirit(currentSpirit);
+}
+
+void LevelUp() {
+spiritLevel++;
+GameplayUI.Instance.UpdateSpiritLevelValue(spiritLevel);
+}
+*/

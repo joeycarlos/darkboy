@@ -25,6 +25,7 @@ public class GameplayUI : MonoBehaviour
     private List<Image> healthIcons;
 
     // SPIRIT
+    /*
     [Header("Spirit")]
     [SerializeField] private Text spiritLevelValue;
     [SerializeField] private Image spiritBarImage;
@@ -32,6 +33,7 @@ public class GameplayUI : MonoBehaviour
     [HideInInspector] public int spiritBarMax;
     private int mCurrentValue;
     private float mCurrentPercent;
+    */
 
     void Awake() {
         _instance = this;
@@ -67,7 +69,7 @@ public class GameplayUI : MonoBehaviour
     }
 
     // SPIRIT UI HELPER FUNCTIONS
-
+    /*
     public void UpdateSpiritLevelValue(int newLevel) {
         spiritLevelValue.text = newLevel.ToString();
     }
@@ -84,4 +86,5 @@ public class GameplayUI : MonoBehaviour
 
         spiritBarImage.fillAmount = mCurrentPercent;
     }
+    */
 }

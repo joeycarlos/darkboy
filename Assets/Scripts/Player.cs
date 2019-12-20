@@ -174,7 +174,7 @@ public class Player : MonoBehaviour {
 
                 if (maxChargeReached == false && attackChargeValue >= maxChargeTime) {
                     maxChargeReached = true;
-                    Debug.Log("Setting maxChargeReached to true");
+                    Destroy(iChargingParticleEffect);
                 }
 
                 if (Input.GetKeyUp(KeyCode.Space)) {
@@ -184,7 +184,8 @@ public class Player : MonoBehaviour {
                     maxChargeReached = false;
                     
                     state = State.Attacking;
-                    Destroy(iChargingParticleEffect);
+                    if (iChargingParticleEffect != null)
+                        Destroy(iChargingParticleEffect);
                 }
                 break;
             case State.Attacking:

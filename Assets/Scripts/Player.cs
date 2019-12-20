@@ -39,6 +39,7 @@ public class Player : MonoBehaviour {
     private GameObject iAttackIndicator;
     private bool maxIndicatorRangeReached;
     private bool attackPending;
+    private bool maxChargeReached;
 
     [SerializeField] private GameObject chargingParticleEffect;
     private GameObject iChargingParticleEffect;
@@ -95,6 +96,7 @@ public class Player : MonoBehaviour {
         horizontalInput = Input.GetAxis("Horizontal");
         isGrounded = CheckGround();
         anim.SetInteger("State", (int)state);
+        anim.SetBool("maxChargeReached", maxChargeReached);
 
         switch (state) {
             case State.Idle:
@@ -170,10 +172,16 @@ public class Player : MonoBehaviour {
                 // UpdateAttackIndicator(CalcRange(attackChargeValue / maxChargeTime), isFacingRight);
                 headSprite.color = new Color(1, 0.9f - Mathf.Clamp(attackChargeValue/5.0f, 0, 0.3f), 0.9f - Mathf.Clamp(attackChargeValue / 5.0f, 0, 0.3f));
 
+                if (maxChargeReached == false && attackChargeValue >= maxChargeTime) {
+                    maxChargeReached = true;
+                    Debug.Log("Setting maxChargeReached to true");
+                }
+
                 if (Input.GetKeyUp(KeyCode.Space)) {
                     headSprite.color = new Color(1, 1, 1);
                     attackAnimCounter = attackAnimTime;
                     attackPending = true;
+                    maxChargeReached = false;
                     
                     state = State.Attacking;
                     Destroy(iChargingParticleEffect);
@@ -183,7 +191,9 @@ public class Player : MonoBehaviour {
                 attackAnimCounter -= Time.deltaTime;
 
                 if (attackAnimCounter <= attackAnimTime - 0.05f && attackPending == true) {
-                    Attack(CalcRange(attackChargeValue / maxChargeTime), CalcDamage(attackChargeValue / maxChargeTime), CalcKnockback(attackChargeValue / maxChargeTime), isFacingRight);
+                    // Attack(CalcRange(attackChargeValue / maxChargeTime), CalcDamage(attackChargeValue / maxChargeTime), CalcKnockback(attackChargeValue / maxChargeTime), isFacingRight);
+                    attackChargeValue = Mathf.Clamp(attackChargeValue, 0, maxChargeTime);
+                    Attack(CalcRange(attackChargeValue), CalcDamage(attackChargeValue), CalcKnockback(attackChargeValue), isFacingRight);
                     attackPending = false;
                     attackChargeValue = 0;
                     Destroy(iAttackIndicator);
@@ -250,6 +260,7 @@ public class Player : MonoBehaviour {
         attackChargeValue = 0;
         attackAnimCounter = 0;
         isRecovering = false;
+        maxChargeReached = false;
     }
 
     // MOVEMENT HELPER FUNCTIONS
@@ -520,15 +531,18 @@ public class Player : MonoBehaviour {
     }
 
     private float CalcRange(float attackChargeValue) {
-        return 1 + (0.5f * spiritLevel + 0.5f) * (2.0f * attackChargeValue + 1.0f);
+        // return 1 + (0.5f * spiritLevel + 0.5f) * (2.0f * attackChargeValue + 1.0f);
+        return 2 + attackChargeValue * 2;
     }
 
     private float CalcDamage(float attackChargeValue) {
-        return spiritLevel * (6.0f * attackChargeValue + 1);
+        // return spiritLevel * (6.0f * attackChargeValue + 1);
+        return 2 + attackChargeValue * 2;
     }
 
     private float CalcKnockback(float attackChargeValue) {
-        return 3 + (0.5f * attackChargeValue + (spiritLevel - 1) * 0.125f) * 5.0f;
+        // return 3 + (0.5f * attackChargeValue + (spiritLevel - 1) * 0.125f) * 5.0f;
+        return 5 + attackChargeValue * 3;
     }
 
     private void SpawnImpactParticles(Vector3 position, Vector2 dimensions) {

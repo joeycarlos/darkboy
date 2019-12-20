@@ -218,7 +218,7 @@ MonoBehaviour:
   healthBar: {fileID: 5323186287568414875}
   maxHealth: 10
   knockbackResistance: 0
-  moveSpeed: 7
+  moveSpeed: 5
   state: 0
 --- !u!1001 &7166473517379946261
 PrefabInstance:
